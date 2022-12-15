@@ -12,7 +12,7 @@ use Monolog\Handler\FirePHPHandler;
  */
 class Logs {
 
-	protected ?Logger $log = null;
+	public ?Logger $log = null;
 
 	public function __construct() {
 		$this->log = new Logger('my_logger');

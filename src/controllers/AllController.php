@@ -9,9 +9,11 @@ use Api\Functions\Logs;
  */
 class AllController {
 
-	private ?Logs $log = null;
+	use Api\Traits\Response;
+
+	protected ?Logs $log = null;
 	
-	public function __construct() {
+	protected function __construct() {
 		$this->log = new Logs();
 	}
 
