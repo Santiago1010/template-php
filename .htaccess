@@ -1,0 +1,22 @@
+RewriteEngine On
+#RewriteCond %{REMOTE_ADDR} !^127\.0\.0\.1
+#RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteRule ^(.*)$ /index.html [L]
+
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]
+
+#RewriteCond %{HTTP_REFERER} !^$
+#RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?tudominio.com [NC]
+#RewriteRule \.(jpg|jpeg|png|gif)$ - [NC,F,L]
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(html|php)$">
+        Header set Cache-Control "max-age=1209600, public"
+    </FilesMatch>
+</IfModule>
