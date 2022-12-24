@@ -2,19 +2,20 @@
 
 namespace Api\Controllers;
 
-use Api\Functions\Logs;
+use Api\Traits\Response;
+use Api\Traits\Files;
+use Api\Traits\Logger;
 
 /**
  * Clase que contendrá todas las funciones y traits.
  */
 class AllController {
 
-	use Api\Traits\Response;
-
-	protected ?Logs $log = null;
+	use Response;
+	use Files;
+	use Logger;
 	
-	protected function __construct() {
-		$this->log = new Logs();
+	public function __construct() {
 	}
 
 }

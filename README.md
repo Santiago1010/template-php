@@ -111,6 +111,7 @@ Las librerías son componentes de código que nos permiten aprovechar el trabajo
 [![Árbol de archivos y carpetas](https://i.imgur.com/Rzlnhz8.png "Árbol de archivos y carpetas")](https://i.imgur.com/Rzlnhz8.png "Árbol de archivos y carpetas")
 
 ## Archivos de configuración
+
 Los **archivos de configuración** son archivos especiales que contienen la información necesaria para configurar una aplicación o sistema. En un entorno de plataforma web cliente, los archivos de configuración pueden contener información como la ruta del servidor backend, la configuración de autenticación y autorización, o la configuración de opciones de desarrollo. Esta información se utiliza por la aplicación web cliente para interactuar con el servidor backend y proporcionar la funcionalidad deseada. Los archivos de configuración también se pueden utilizar para establecer opciones de configuración de la aplicación, como el idioma predeterminado o la apariencia de la interfaz de usuario.
 
 ### .env.example

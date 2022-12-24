@@ -35,11 +35,6 @@ trait Response {
 		return $this->jsonParser($message);
 	}
 
-	protected function messagePartialContent(?string $text = "La solicitud ha tenido éxito, pero sólo se ha devuelto una parte del recurso solicitado. Esto se utiliza a menudo cuando se realizan solicitudes de descarga parcial de recursos grandes.", ?array $data = null) {
-		$message = ['status' => 206, 'message' => $text, 'data' => $data];
-		return $this->jsonParser($message);
-	}
-
 	// Códigos de estado de redirección
 
 	protected function messageMovedPermanently(?string $text = "El recurso se ha movido permanentemente a una nueva URL. El mensaje de actualización ya ha sido enviado al equipo de desarrollo.", ?array $data = null) {
@@ -86,7 +81,7 @@ trait Response {
 		return $this->jsonParser($message);
 	}
 
-	protected function messageInternalServerError(?string $text = "La solicitud se ha realizado correctamente pero el servidor no tiene la capacidad de procesarla. Esto puede ocurrir si la solicitud utiliza una operación o un protocolo que el servidor no admite.", ?array $data = null) {
+	protected function messageInternal(?string $text = "La solicitud se ha realizado correctamente pero el servidor no tiene la capacidad de procesarla. Esto puede ocurrir si la solicitud utiliza una operación o un protocolo que el servidor no admite.", ?array $data = null) {
 		$message = ['status' => 501, 'message' => $text, 'data' => $data];
 		return $this->jsonParser($message);
 	}

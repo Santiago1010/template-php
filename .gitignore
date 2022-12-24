@@ -1,3 +1,5 @@
+prueba.*
+
 ### CakePHP ###
 # CakePHP 3
 
@@ -15,7 +17,7 @@
 /tmp/tests/*
 !/tmp/tests/empty
 
-/logs/*
+src/logs/*
 !/logs/empty
 
 # CakePHP 2
