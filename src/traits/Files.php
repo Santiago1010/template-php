@@ -55,7 +55,7 @@ trait Files {
 		$dateTime = date("d/m/Y - H:i:s");
 
   		// Generar el registro en formato "fecha y hora - mensaje"
-		$record = $dateTime . ": " . $message;
+		$record = $dateTime . "---> " . $message;
 
   		// Agregar el registro al archivo .log
 		file_put_contents($route, $record . "\n", FILE_APPEND);

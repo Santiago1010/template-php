@@ -3,21 +3,24 @@
 namespace Api\Traits;
 
 use Api\Traits\Files;
+use Api\Traits\Email;
 
 /**
- * Clase que controla todos los logs de la API.
+ * Este código define un Trait llamado `Logger`, que puede ser utilizado por cualquier clase para llevar un registro de mensajes de depuración y errores. El Trait `Logger` utiliza el Trait `Files` para escribir los mensajes de depuración y errores en archivos de registro.
  */
 trait Logger {
 
 	use Files;
+	use Email;
 
 	private ?string $route = null;
 	private array $info;
+	private string $newMessage;
 
-	protected function defineLogPath(array $info, ?string $path = "./src/logs") {
+	protected function defineLogPath(array $info) {
 		$this->info = $info;
 
-		$logPath = rtrim($path, '/');
+		$logPath = rtrim($_ENV['LOG_PATH'], '/');
 
 		if (file_exists($logPath) || filter_var($logPath, FILTER_VALIDATE_URL)) {
 			$this->route = $logPath;
@@ -27,8 +30,9 @@ trait Logger {
 	}
 
 	private function setMessage(string $message, ?string $function = null): string {
-		$m = $message . " en `" .$this->info['class'];
+		$m = $message . " en `" . $_ENV['APP_NAME'] . "\\" .$this->info['class'];
 		$m .= $function !== null ? '->' . $function . '()`.' : '`.';
+		$this->newMessage = $m;
 		return $m;
 	}
 
@@ -50,10 +54,12 @@ trait Logger {
 
 	protected function error(?string $message = "Hay un error", ?string $function = null) {
 		$this->createLog($message, $function, debug_backtrace()[0]['function']);
+		$this->setEmail()->setRecipents(json_decode($_ENV['TEAM_ACCOUNTS']))->setContent(strtoupper(debug_backtrace()[0]['function']) . ' EN ' . strtoupper($_ENV['APP_NAME']), $this->newMessage)->sendEmail();
 	}
 
-	protected function critial(?string $message = "Hay un fallo crítico que requiere mantenimiento inmediato", ?string $function = null) {
+	protected function critical(?string $message = "Hay un fallo crítico que requiere mantenimiento inmediato", ?string $function = null) {
 		$this->createLog($message, $function, debug_backtrace()[0]['function']);
+		$this->setEmail()->setRecipents(explode(", ", $_ENV['TEAM_ACCOUNTS']))->setContent('¡ERROR CRÍTICO EN ' . strtoupper($_ENV['APP_NAME']) . "!", $this->newMessage)->sendEmail();
 	}
 
 	private function createFile(string $type): string {
