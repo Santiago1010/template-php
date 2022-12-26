@@ -21,11 +21,12 @@ $dotenv->load();
 Router::init();
 
 Router::group(['prefix' => '/apiv1'], function() {
-    //Router::post('/prueba', $Prueba->crearArchivo());
-    Router::post('/prueba', function() {
-    	$Prueba = new Prueba();
-    	$Prueba->crearArchivo();
-    });
+	Router::group(['prefix' => '/test'], function() {
+		Router::get('/get', function(){
+			$prueba = new Prueba();
+			var_dump($prueba->crearArchivo());
+		});
+	});
 });
 
 Router::dispatch();

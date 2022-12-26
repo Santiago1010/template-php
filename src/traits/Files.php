@@ -20,22 +20,24 @@ trait Files {
 	}
 
 	public function saveFile(string $path, string $fileName, string $content) {
-  		// Verificar si la ruta existe. Si no existe, crearla.
+    	// Verificar si la ruta existe. Si no existe, crearla.
 		if (!file_exists($path)) {
 			mkdir($path, 0777, true);
 		}
 
-		$fileType = explode('.', $fileName);
+		$fileType = pathinfo($fileName, PATHINFO_EXTENSION);
 
-  		// Guardar el archivo en la ruta especificada
-		if (end($fileType) !== 'log') {
-			$archivo = fopen($ruta . "/" . $nombre_archivo, "w");
-			fwrite($archivo, $contenido);
-			fclose($archivo);
-		}else {
+    	// Guardar el archivo en la ruta especificada
+		if ($fileType !== 'log') {
+			$file = fopen($path . "/" . $fileName, "w");
+			fwrite($file, $content);
+			fclose($file);
+		} else {
 			$this->saveLogRecord($fileName, $content);
 		}
 	}
+
+
 
 	public function saveLogRecord(string $fileName, string $message, ?string $logFilePath = "./src/logs/") {
 		$path = rtrim($logFilePath, '/');
