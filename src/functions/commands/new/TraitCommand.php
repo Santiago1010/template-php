@@ -40,7 +40,7 @@ trait $name {
 		if ($this->saveFile('./src/traits/', "$name.php", $content)) {
 			$this->setNewTrait($name);
 
-			$output->writeln("El trait $name ha sido creado exitosamente en la ruta: " . './src/traits/' . $name . '.php');
+			$output->writeln("El trait '$name' ha sido creado exitosamente en la ruta: './src/traits/{$name}.php'");
 		} else {
 			$output->writeln("El trait '$name' ya se encuentra creado en './src/traits/{$name}.php'.");
 		}
