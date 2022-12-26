@@ -15,12 +15,6 @@ class Router {
 
 	public static function init() {
 		self::$router = new RouteCollector();
-		self::$request = self::setRequest();
-	}
-
-	private static function setRequest(): object {
-		$content = json_decode(file_get_contents("php://input"), true);
-        return $content === null ? (object) ($_POST + $_FILES + $_GET) : (object) $content;
 	}
 
 	public static function get(string $uri, $function, array $options = []): void {

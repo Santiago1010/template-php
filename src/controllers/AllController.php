@@ -15,8 +15,15 @@ class AllController {
 	use Files;
 	use Logger;
 	
-	protected array $request;
+	protected $request;
 
-	public function __construct() {}
+	public function __construct() {
+		$this->request = $this->getRequest();
+	}
+
+	private function getRequest(): object {
+		$content = json_decode(file_get_contents("php://input"), true);
+        return $content === null ? (object) ($_POST + $_FILES + $_GET) : (object) $content;
+	}
 
 }
