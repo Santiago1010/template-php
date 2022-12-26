@@ -28,24 +28,29 @@ class ControllerCommand extends Command {
 		// Crear el contenido del archivo controlador
 		$content = "<?php
 
+// Se define el namespace de los controladores.
 namespace Api\Controllers;
 
+// Se llama a la interfaz general.
+use Api\Interface\iConstructor;
+
+// Se llama `AllController` y sus traits y funciones.
 use Api\Controllers\AllController;
 
-class $name extends AllController {
+/**
+ * Se define una clase final llamada `$name` que extiende de `AllController` (el cuál hereda de todas las funciones almacenadas en './src/functions/' y traits almacenados en './src/traits/') e implementa la interfaz `iConstructor`. La clase tiene un método constructor que llama al método constructor de la clase padre y luego llama al método `defineLogPath` que definirá la ruta en donde se almacenarán los logs creados (por defecto se almacenan en './src/logs/') con el resultado de la función `debug_backtrace()[0]` (que envía información como el nombre de la clase, el archivo, ubicación, etc.) como argumento.
+ */
+final class $name extends AllController implements iConstructor {
 
 	public function __construct() {
-		parent::__construct();
-		\$this->defineLogPath(debug_backtrace()[0]);
+		parent::__construct(); // Se ejecuta el constructor de `AllController`.
+		\$this->defineLogPath(debug_backtrace()[0]); // Se define la ruta por defecto de los logs y se envía la información de la clase.
 	}
 
 }";
 
 		// Guardar el archivo controlador en la ruta local especificada
-		$this->saveFile('./src/controllers/', "$name.php", $content);
-
-		// Mostrar mensaje de éxito
-		$output->writeln("El archivo controlador $name ha sido creado exitosamente en la ruta: " . './src/controllers/');
+		$this->saveFile('./src/controllers/', "$name.php", $content) ? $output->writeln("El archivo controlador '$name' ha sido creado exitosamente en la ruta: './src/controllers/" . $name . ".php'") : $output->writeln("El archivo controlador '$name' ya se encuentra creado en './src/controllers/{$name}.php'.");
 
 		return Command::SUCCESS;
 	}

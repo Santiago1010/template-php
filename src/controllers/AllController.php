@@ -2,6 +2,8 @@
 
 namespace Api\Controllers;
 
+use Api\Interface\iConstructor;
+
 use Api\Traits\Response;
 use Api\Traits\Files;
 use Api\Traits\Logger;
@@ -9,7 +11,7 @@ use Api\Traits\Logger;
 /**
  * Clase que contendrá todas las funciones y traits.
  */
-class AllController {
+class AllController implements iConstructor {
 
 	use Response;
 	use Files;
