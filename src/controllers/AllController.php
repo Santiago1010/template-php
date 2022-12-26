@@ -5,7 +5,6 @@ namespace Api\Controllers;
 use Api\Interface\iConstructor;
 
 use Api\Functions\Security;
-use Api\Functions\Prueba;
 
 use Api\Traits\Response;
 use Api\Traits\Files;
@@ -21,12 +20,10 @@ class AllController implements iConstructor {
 	use Logger;
 
 	protected object $request;
-	protected Prueba $prueba;
 	protected Security $security;
 
 	public function __construct() {
 		$this->request = $this->getRequest();
-		$this->prueba = new Prueba();
 		$this->security = new Security();
 	}
 

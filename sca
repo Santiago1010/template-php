@@ -5,9 +5,13 @@ require_once(__DIR__ . "/vendor/autoload.php");
 
 use Symfony\Component\Console\Application;
 
+// Comandos de creación.
 use Api\Functions\Commands\New\ControllerCommand;
 use Api\Functions\Commands\New\TraitCommand;
 use Api\Functions\Commands\New\FunctionCommand;
+
+// Comandos de eliminación.
+use Api\Functions\Commands\Delete\FunctionCommand as DeleteFunction;
 
 // Crear una nueva aplicación de consola
 $application = new Application();
@@ -16,6 +20,7 @@ $application = new Application();
 $application->add(new ControllerCommand());
 $application->add(new TraitCommand());
 $application->add(new FunctionCommand());
+$application->add(new DeleteFunction());
 
 // Ejecutar la aplicación
 $application->run();

@@ -43,6 +43,12 @@ trait Files {
 		}
 	}
 
+	protected function deleteFile(string $path): bool {
+		if (file_exists($path)) {
+			return unlink($path);
+		}
+		return false;
+	}
 
 
 	public function saveLogRecord(string $fileName, string $message, ?string $logFilePath = "./src/logs/") {
