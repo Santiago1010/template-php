@@ -15,10 +15,7 @@ class ControllerCommand extends Command {
 	protected static $defaultName = 'new:controller';
 
 	protected function configure() {
-		$this
-		->setDescription('Crear un nuevo archivo controlador')
-		->setHelp('Este comando te permite crear un nuevo archivo controlador...')
-		->addArgument('name', InputArgument::REQUIRED, 'Nombre del archivo controlador');
+		$this->setDescription('Crear un nuevo archivo controlador')->setHelp('Este comando te permite crear un nuevo archivo controlador...')->addArgument('name', InputArgument::REQUIRED, 'Nombre del archivo controlador');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
@@ -31,18 +28,18 @@ class ControllerCommand extends Command {
 		// Crear el contenido del archivo controlador
 		$content = "<?php
 
-		namespace Api\Controllers;
+namespace Api\Controllers;
 
-		use Api\Controllers\AllController;
+use Api\Controllers\AllController;
 
-		class $name extends AllController {
+class $name extends AllController {
 
-			public function __construct() {
-				parent::__construct();
-				\$this->defineLogPath(debug_backtrace()[0]);
-			}
+	public function __construct() {
+		parent::__construct();
+		\$this->defineLogPath(debug_backtrace()[0]);
+	}
 
-		}";
+}";
 
 		// Guardar el archivo controlador en la ruta local especificada
 		$this->saveFile('./src/controllers/', "$name.php", $content);
@@ -56,18 +53,18 @@ class ControllerCommand extends Command {
 	private function getControllerName(InputInterface $input) {
 		$name = $input->getArgument('name');
 
-	    // Remover espacios y caracteres especiales
+		// Remover espacios y caracteres especiales
 		$name = preg_replace('/\s+/', '', $name);
-		$name = preg_replace('/[^A-Za-z0-9]/', '', ucwords($name));
+		$name = preg_replace('/[^A-Za-z0-9]/', '', $name);
 
-	    // Verificar si el nombre ya contiene 'Controller', 'Controllers' o variantes
+		// Verificar si el nombre ya contiene 'Controller', 'Controllers' o variantes
 		if (preg_match('/Controller$|Controllers$/i', $name) !== 1) {
 			$name .= 'Controller';
 		} else {
 			$name = preg_replace('/Controller$|Controllers$/i', 'Controller', $name);
 		}
 
-	    // Hacer un TitleCase al nombre
+		// Hacer un TitleCase al nombre
 		$name = ucwords($name);
 
 		return $name;

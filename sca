@@ -6,12 +6,14 @@ require_once(__DIR__ . "/vendor/autoload.php");
 use Symfony\Component\Console\Application;
 
 use Api\Functions\Commands\New\ControllerCommand;
+use Api\Functions\Commands\New\TraitCommand;
 
 // Crear una nueva aplicación de consola
 $application = new Application();
 
 // Registrar tus comandos en la aplicación
 $application->add(new ControllerCommand());
+$application->add(new TraitCommand());
 
 // Ejecutar la aplicación
 $application->run();

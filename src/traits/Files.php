@@ -19,7 +19,7 @@ trait Files {
 		$this->external = $route;
 	}
 
-	public function saveFile(string $path, string $fileName, string $content) {
+	public function saveFile(string $path, string $fileName, string $content): bool {
     	// Verificar si la ruta existe. Si no existe, crearla.
 		if (!file_exists($path)) {
 			mkdir($path, 0777, true);
@@ -27,13 +27,19 @@ trait Files {
 
 		$fileType = pathinfo($fileName, PATHINFO_EXTENSION);
 
-    	// Guardar el archivo en la ruta especificada
-		if ($fileType !== 'log') {
-			$file = fopen($path . "/" . $fileName, "w");
-			fwrite($file, $content);
-			fclose($file);
+		if (!file_exists($path . "/" . $fileName)) {
+    		// Guardar el archivo en la ruta especificada
+			if ($fileType !== 'log') {
+				$file = fopen($path . "/" . $fileName, "w");
+				fwrite($file, $content);
+				fclose($file);
+				return true;
+			} else {
+				$this->saveLogRecord($fileName, $content);
+				return true;
+			}
 		} else {
-			$this->saveLogRecord($fileName, $content);
+			return false;
 		}
 	}
 

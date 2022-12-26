@@ -14,7 +14,7 @@ class AllController {
 	use Response;
 	use Files;
 	use Logger;
-	
+
 	protected $request;
 
 	public function __construct() {
