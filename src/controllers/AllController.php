@@ -15,7 +15,8 @@ class AllController {
 	use Files;
 	use Logger;
 	
-	public function __construct() {
-	}
+	protected array $request;
+
+	public function __construct() {}
 
 }
