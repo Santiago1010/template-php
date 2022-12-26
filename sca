@@ -12,6 +12,8 @@ use Api\Functions\Commands\New\FunctionCommand;
 
 // Comandos de eliminación.
 use Api\Functions\Commands\Delete\FunctionCommand as DeleteFunction;
+use Api\Functions\Commands\Delete\TraitCommand as DeleteTrait;
+use Api\Functions\Commands\Delete\ControllerCommand as DeleteController;
 
 // Crear una nueva aplicación de consola
 $application = new Application();
@@ -21,6 +23,8 @@ $application->add(new ControllerCommand());
 $application->add(new TraitCommand());
 $application->add(new FunctionCommand());
 $application->add(new DeleteFunction());
+$application->add(new DeleteTrait());
+$application->add(new DeleteController());
 
 // Ejecutar la aplicación
 $application->run();
