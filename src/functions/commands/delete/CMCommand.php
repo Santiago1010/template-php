@@ -32,13 +32,22 @@ class CMCommand extends Command {
 			if ($this->deleteFile("./src/models/entities/" . $this->getEntityName($name) . ".php")) {
 				$output->writeln("La entidad '" . $this->getEntityName($name) . "' ha sido eliminada.");
 
-			 	if ($this->deleteFile("./src/models/" . $this->getModelName($name) . ".php")) {
-			 		$output->writeln("El modelo '" . $this->getModelName($name) . "' ha sido eliminado.");
+				if ($this->deleteFile("./src/models/" . $this->getModelName($name) . ".php")) {
+					$output->writeln("El modelo '" . $this->getModelName($name) . "' ha sido eliminado.");
 
-			 		if ($this->deleteFile("./src/controllers/" . $this->getControllerName($name) . ".php")) {
-			 			$output->writeln("El controlador " . $this->getControllerName($name) . " ha sido eliminado.");
-			 		} else { $output->writeln("El controlador '" . $this->getModelName($name) . "' no existe."); }
-			 	} else { $output->writeln("El modelo '" . $this->getModelName($name) . "' no existe."); }
+					if ($this->deleteFile("./src/controllers/" . $this->getControllerName($name) . ".php")) {
+						$output->writeln("El controlador " . $this->getControllerName($name) . " ha sido eliminado.");
+
+						$index = file_get_contents('index.php');
+						preg_match('/' . $this->getControllerName($name) . '/', $index, $delete);
+						
+
+						$deleteLine = "\nuse Api\\Controllers\\{$delete[0]};";
+						$index = str_replace($deleteLine, "", $index);
+
+						file_put_contents('index.php', $index);
+					} else { $output->writeln("El controlador '" . $this->getModelName($name) . "' no existe."); }
+				} else { $output->writeln("El modelo '" . $this->getModelName($name) . "' no existe."); }
 			} else { $output->writeln("La entidad '" . $this->getEntityName($name) . "' no existe."); }
 		}
 
@@ -133,5 +142,4 @@ class CMCommand extends Command {
 		return $name;
 	}
 
-		
 }
