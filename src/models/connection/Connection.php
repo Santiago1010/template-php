@@ -38,7 +38,7 @@ class Connection {
 		return $this->connection->prepare($sql);
 	}
 
-	public function getBindValue($ps, $object, ?array $methods = []): bool {
+	public function getBindValue($ps, $object, ?array $methods = []) {
 		$counter = 1;
 
   		// Filtramos sólo los métodos que empiecen con "get"
@@ -48,12 +48,13 @@ class Connection {
 
   		// Iteramos sobre los métodos y asignamos sus valores devueltos a los parámetros del prepared statement
 		foreach ($methods as $method) {
+			$value = $object->$method();
     		// Asignamos el valor devuelto al parámetro del prepared statement con el mismo nombre que el método
-			$ps->bindValue($counter, $object->$method(), $this->setType($value));
+			$ps->bindValue($counter, $value, $this->setTypes($value));
 			$counter++;
 		}
 
-  		// Ejecutamos la consulta preparada y devolvemos el resultado
+  		// Devolvemos el resultado
 		return $ps;
 	}
 
@@ -79,7 +80,16 @@ class Connection {
 	}
 
 	public function getFetch($preparedStatement): array {
-		return $preparedStatement->execute()->rowCount() === 1 ? $preparedStatement->fetch() : ($preparedStatement->rowCount() > 1 ? $preparedStatement->fetchAll() : $preparedStatement->errorInfo());
+  		// Si la consulta se ejecutó correctamente
+		return $preparedStatement->execute()
+    	// Si la consulta devolvió un único registro, devolvemos el registro
+		? ($preparedStatement->rowCount() === 1 ? $preparedStatement->fetch()
+   			 // Si la consulta devolvió varios registros, devolvemos todos los registros
+		: ($preparedStatement->rowCount() > 1 ? $preparedStatement->fetchAll()
+    	// Si la consulta no se ejecutó correctamente, devolvemos la información de error
+		: $preparedStatement->errorInfo()))
+    	// Si la consulta no se ejecutó correctamente, devolvemos la información de error
+		: $preparedStatement->errorInfo();
 	}
 
 }
