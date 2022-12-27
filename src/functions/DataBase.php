@@ -12,7 +12,7 @@ use Api\Models\Connection\Connection;
  */
 class DataBase implements iConstructor {
 	
-	private $connection;
+	private Connection $connection;
 	
 	public function __construct() {
 		$this->connection = Connection::getInstance();

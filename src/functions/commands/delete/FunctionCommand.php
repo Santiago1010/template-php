@@ -43,7 +43,7 @@ class FunctionCommand extends Command {
 	}
 
 	private function safeDelete(string $name, OutputInterface $output): bool {
-		$safe = ['security'];
+		$safe = ['security', 'database'];
 
 		if (in_array(strtolower($name), $safe)) {
 			$output->writeln("La función '{$name}' no puede ser eliminada, ya que forma parte del núcleo del framework.");

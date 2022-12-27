@@ -41,7 +41,7 @@ namespace Api\Entities;
 use Api\Interfaces\iEntity;
 
 /**
- * La clase `{$name}` es una clase de PHP que se encarga de realizar operaciones CRUD (crear, leer, actualizar y eliminar) en una tabla de usuarios en una base de datos. Esta clase implementa una interfaz llamada 'iEntity' que define los métodos necesarios para realizar estas operaciones. La clase `{$name}` proporciona una implementación para estos métodos y también tiene un constructor y varios métodos de acceso y modificación (`getters` y `setters`) para los atributos de la clase. Los métodos `create()`, `read()`, `update()` y `delete()` tienen un parámetro llamado `query` que indica la operación a realizar y devuelven una cadena con la consulta SQL correspondiente a la operación especificada.
+ * La entidad `{$name}` es una clase de PHP que se encarga de realizar operaciones CRUD (crear, leer, actualizar y eliminar) en una tabla de usuarios en una base de datos. Esta clase implementa una interfaz llamada 'iEntity' que define los métodos necesarios para realizar estas operaciones. La clase `{$name}` proporciona una implementación para estos métodos y también tiene un constructor y varios métodos de acceso y modificación (`getters` y `setters`) para los atributos de la clase. Los métodos `create()`, `read()`, `update()` y `delete()` tienen un parámetro llamado `query` que indica la operación a realizar y devuelven una cadena con la consulta SQL correspondiente a la operación especificada.
  */
 
 class Users implements iEntity {
@@ -53,7 +53,7 @@ class Users implements iEntity {
 " . $this->setGettersSetters() . "
 	public function create(string \$query); string {
     	\$create = [
-    		\"\" => \"\"
+    		\"create" . rtrim(strtolower($name), 's') . "\" => \"INSERT INTO {$input->getArgument('name')} (?, ?, ?, ?)\"
     	];
 
     	return \$create[\$query];
@@ -61,7 +61,7 @@ class Users implements iEntity {
 
     public function read(string \$query): string {
     	\$read = [
-    		\"\" => \"\"
+    		\"read{$name}\" => \"SELECT * FROM {$input->getArgument('name')}\"
     	];
 
     	return \$read[\$query];
@@ -69,7 +69,7 @@ class Users implements iEntity {
 
     public function update(string \$query): string {
     	\$update = [
-    		\"\" => \"\"
+    		\"update{$name}\" => \"UPDATE {$input->getArgument('name')} SET name = ? WHERE id = ?\"
     	];
 
     	return \$update[\$query];
@@ -78,7 +78,7 @@ class Users implements iEntity {
 
     public function delete(string \$query): string {
     	\$delete = [
-    		\"\" => \"\"
+    		\"delete" . rtrim(strtolower($name), 's') . "\" => \"DELETE FROM {$input->getArgument('name')} WHERE id = ?\"
     	];
 
     	return \$delete[\$query];
@@ -89,9 +89,9 @@ class Users implements iEntity {
 		// Guardar el archivo controlador en la ruta local especificada
 		if ($this->saveFile('./src/models/entities/', "$name.php", $content)) {
 
-			$output->writeln("La entidad '$name' ha sido creado exitosamente en la ruta: './src/models/entities/{$name}.php'");
+			$output->writeln("La entidad '$name' ha sido creada exitosamente en la ruta: './src/models/entities/{$name}.php'");
 		} else {
-			$output->writeln("La entidad '$name' ya se encuentra creado en './src/models/entities/{$name}.php'.");
+			$output->writeln("La entidad '$name' ya se encuentra creada en './src/models/entities/{$name}.php'.");
 		}
 
 		return Command::SUCCESS;
@@ -136,7 +136,7 @@ class Users implements iEntity {
 		return \$this->" . $this->setNameAttr($attr['COLUMN_NAME']) . ";
 	}\n";
 
-			$content .= "\n\tpublic function set{$name}(string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . ") {
+			$content .= "\n\tpublic function set{$name}(string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . "): self {
 		\$this->" . $this->setNameAttr($attr['COLUMN_NAME']) . " = \$" . $this->setNameAttr($attr['COLUMN_NAME']) . ";
 		return \$this;
 	}\n";
