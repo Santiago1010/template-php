@@ -28,6 +28,11 @@ Router::group(['prefix' => '/apiv1'], function() {
 			$prueba = new Prueba();
 			var_dump($prueba->readColumns());
 		});
+
+		Router::post('/user', function() {
+			$users = new UsersController();
+			var_dump($users->createuser());
+		});
 	});
 });
 
