@@ -20,7 +20,7 @@ class DataBase implements iConstructor {
 
 	public function readColumns(string $table): array {
 		$ps = $this->connection->getPrepareStatement("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{$_ENV['NAME_DB']}' AND TABLE_NAME = '{$table}'");
-		return $this->connection->getFetch($ps, true);
+		return $this->connection->getFetch($ps);
 	}
 
 }

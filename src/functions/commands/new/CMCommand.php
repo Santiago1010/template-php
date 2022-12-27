@@ -165,30 +165,32 @@ final class {$name} extends AllController implements iConstructor {
 	// Crear un nuevo registro.
 	public function create" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->create(\"create" . rtrim($this->entity, 's') . "\"));
-		\$ps = \$this->connection->getBindValue(\$ps, \${$object});
-		return ;
+		\$ps = \$this->connection->getBindValue(\$ps, \${$object}, [" . $this->ignoreId() . "]);
+		return \$ps->execute();
 	}
 
 	// Lee la lista completa de los registros.
 	public function read{$this->entity}DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->read(\"read{$this->entity}\"));
-		return \$this->connection->getFetch(\$ps, true);
+		return \$this->connection->getFetch(\$ps);
 	}
 
 	// Lee la información de 1 sólo registro.
 	public function read" . ucfirst($object) . "DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->read(\"read" . rtrim($this->entity, 's') . "\"));
-		return \$this->connection->getFetch(\$this->connection->getBindValue(false, \$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']), true);
+		return \$this->connection->getFetch(\$this->connection->getBindValue(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']));
 	}
 
 	public function update" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->update(\"update" . rtrim($this->entity, 's') . "\"));
-		return \$this->connection->getFetch(\$this->connection->getBindValue(false, \$ps, \${$object}, [" . $this->setUpdateOrder() . "]), true);
+		\$ps = \$this->connection->getBindValue(\$ps, \${$object}, [" . $this->setUpdateOrder() . "]);
+		return \$ps->execute();
 	}
 
 	public function delete" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->delete(\"delete" . rtrim($this->entity, 's') . "\"));
-		return \$this->connection->getFetch(\$this->connection->getBindValue(false, \$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']), true);
+		\$ps = \$this->connection->getBindValue(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']);
+		return \$ps->execute();
 	}
 
 }";
@@ -378,14 +380,22 @@ final class {$name} extends AllController implements iConstructor {
 		return $sql;
 	}
 
-	private function setUpdateOrder() {
+	private function ignoreId() {
 		$order = "";
 
 		for ($i = 1; $i < count($this->columns); $i++) { 
 			$order .= "'get" . ucfirst($this->setNameAttr($this->columns[$i]['COLUMN_NAME'])) . "', ";
 		}
 
-		$order .= "'get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "'";
+		$order = rtrim($order, ", ");
+
+		return $order;
+	}
+
+	private function setUpdateOrder() {
+		$order = $this->ignoreId();
+
+		$order .= ", 'get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "'";
 
 		return $order;
 	}

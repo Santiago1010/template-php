@@ -17,8 +17,7 @@ $dotenv->load();
 
 use Api\Http\Router;
 
-// Importar controladores.
-use Api\Controllers\UsersController;
+// Importar controladores.
 use Api\Controllers\Prueba;
 
 Router::init();
