@@ -13,6 +13,7 @@ use Api\Functions\Commands\New\TraitCommand;
 use Api\Functions\Commands\New\FunctionCommand;
 use Api\Functions\Commands\New\EntityCommand;
 use Api\Functions\Commands\New\ModelCommand;
+use Api\Functions\Commands\New\CMCommand;
 
 // Comandos de eliminación.
 use Api\Functions\Commands\Delete\FunctionCommand as DeleteFunction;
@@ -33,6 +34,7 @@ $application->add(new TraitCommand());
 $application->add(new FunctionCommand());
 $application->add(new EntityCommand());
 $application->add(new ModelCommand());
+$application->add(new CMCommand());
 $application->add(new DeleteFunction());
 $application->add(new DeleteTrait());
 $application->add(new DeleteController());

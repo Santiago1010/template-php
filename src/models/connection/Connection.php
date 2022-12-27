@@ -12,7 +12,7 @@ class Connection {
 	private $options = [
 		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"
+		PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"
 	];
 
 	private static ?self $conn = null;
@@ -39,47 +39,49 @@ class Connection {
 	}
 
 	public function getBindValue(bool $inverted, $ps, Object $object, array $function) {
-    	$methods = get_class_methods($object);
+  		// Obtiene todos los métodos de la clase del objeto
+		$methods = get_class_methods($object);
+  		// Contador de parámetros
 		$count = 1;
-    	
-    	if (!$inverted) { // Para traer los que s equieren.
-    		foreach ($function as $key => $value) {
-    			$ps->bindValue($count++, $object->$value(), $this->setType($object->$value()));
-    		}
-    	}else { // Para ignorar los otros.
-    		$index = null;
 
-    		for ($i = 0; $i < count($function); $i++) { 
-    			$index = array_search($function[$i], $methods);
-    			unset($methods[$index]);
-    		}
+  		// Si el valor de `$inverted` es falso, se itera sobre el arreglo de funciones proporcionado y se asigna el valor de cada función al parámetro de la consulta preparada
+		if (!$inverted) {
+			foreach ($function as $key => $value) {
+				$ps->bindValue($count++, $object->$value(), $this->setType($object->$value()));
+			}
+		}else {
+  		// Si el valor de `$inverted` es verdadero, se eliminan del arreglo de métodos las funciones proporcionadas y se itera sobre el arreglo restante para asignar los valores de cada función al parámetro de la consulta preparada
+			$index = null;
+			for ($i = 0; $i < count($function); $i++) { 
+				$index = array_search($function[$i], $methods);
+				unset($methods[$index]);
+			}
+			$methods = array_values($methods);
+			foreach ($methods as $key => $value) {
+				$ps->bindValue($count++, $object->$value());
+			}
+		}
 
-    		$methods = array_values($methods);
+  		// Se devuelve la consulta preparada con los parámetros asignados
+		return $ps;
+	}
 
-    		foreach ($methods as $key => $value) {
-    			$ps->bindValue($count++, $object->$value());
-    			//echo $count++ . " - " . $value . " ";
-    		}
-    	}
 
-    	return $ps;
-    }
-
-    private function setType($var) {
+	private function setType($var) {
 		$type = gettype($var);
 		switch ($type) {
 			case 'integer':
-				case 'boolean':
-					return PDO::PARAM_INT;
-					break;
+			case 'boolean':
+			return PDO::PARAM_INT;
+			break;
 
 			case 'string':
-				return PDO::PARAM_STR;
-				break;
-			
+			return PDO::PARAM_STR;
+			break;
+
 			default:
-				return PDO::PARAM_STR;
-				break;
+			return PDO::PARAM_STR;
+			break;
 		}
 	}
 

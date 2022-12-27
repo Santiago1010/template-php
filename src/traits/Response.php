@@ -86,7 +86,7 @@ trait Response {
 		return $this->jsonParser($message);
 	}
 
-	protected function messageServiceUnavailable(?string $text = "Ll servidor no está disponible temporalmente debido a sobrecarga o mantenimiento. La respuesta incluye una cabecera Retry-After que indica cuándo se espera que el servidor vuelva a estar disponible.", ?array $data = null) {
+	protected function messageServiceUnavailable(?string $text = "El servidor no está disponible temporalmente debido a sobrecarga o mantenimiento. La respuesta incluye una cabecera Retry-After que indica cuándo se espera que el servidor vuelva a estar disponible.", ?array $data = null) {
 		$message = ['status' => 501, 'message' => $text, 'data' => $data];
 		return $this->jsonParser($message);
 	}
