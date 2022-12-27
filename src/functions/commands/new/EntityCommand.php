@@ -35,7 +35,7 @@ class EntityCommand extends Command {
 		$content = "<?php
 
 // Se define el namespace de la entidad.
-namespace Api\Entities;
+namespace Api\Models\Entities;
 
 // Usar la interfaz de las entidades.
 use Api\Interfaces\iEntity;
@@ -46,12 +46,12 @@ use Api\Interfaces\iEntity;
 
 class Users implements iEntity {
 
-	private string \$table = \$_ENV['NAME_DB'] . \".{$input->getArgument('name')}\";
+	private string \$table;
 " . $this->setAttributes() . "
-	public function __construct(" . $this->setParams() . "): void {" . $this->setValues() . "
+	public function __construct(" . $this->setParams() . "): void {\n\$this->table = \"{\$_ENV['NAME_DB']}.{$input->getArgument('name')}\"\n" . $this->setValues() . "
 	}
 " . $this->setGettersSetters() . "
-	public function create(string \$query); string {
+	public function create(string \$query): string {
     	\$create = [
     		\"create" . rtrim(strtolower($name), 's') . "\" => \"INSERT INTO {$input->getArgument('name')} (?, ?, ?, ?)\"
     	];

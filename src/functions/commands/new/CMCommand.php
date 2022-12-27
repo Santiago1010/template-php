@@ -61,7 +61,7 @@ class CMCommand extends Command {
 		$content = "<?php
 
 // Se define el namespace de la entidad.
-namespace Api\Entities;
+namespace Api\Models\Entities;
 
 // Usar la interfaz de las entidades.
 use Api\Interfaces\iEntity;
@@ -72,9 +72,9 @@ use Api\Interfaces\iEntity;
 
 class {$this->entity} implements iEntity {
 
-	private string \$table = \$_ENV['NAME_DB'] . \".{$this->name}\";
+	private string \$table;
 " . $this->setAttributes() . "
-	public function __construct(" . $this->setParams() . "): void {" . $this->setValues() . "
+	public function __construct(" . $this->setParams() . "): void {\n\$this->table = \"{\$_ENV['NAME_DB']}.{$input->getArgument('name')}\"\n" . $this->setValues() . "
 	}
 " . $this->setGettersSetters() . "
 	public function create(string \$query); string {
@@ -138,7 +138,7 @@ class {$this->entity} implements iEntity {
 namespace Api\Models;
 
 // Se llama a la interfaz general.
-use Api\Interface\iConstructor;
+use Api\Interfaces\iConstructor;
 
 // Se llama la conexión a la base de datos.
 use Api\Models\Connection\Connection;
@@ -210,7 +210,7 @@ final class {$name} extends AllController implements iConstructor {
 namespace Api\Controllers;
 
 // Se llama a la interfaz general.
-use Api\Interface\iConstructor;
+use Api\Interfaces\iConstructor;
 
 // Se llama `AllController` y sus traits y funciones.
 use Api\Controllers\AllController;

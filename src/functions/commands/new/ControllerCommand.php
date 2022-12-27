@@ -32,7 +32,7 @@ class ControllerCommand extends Command {
 namespace Api\Controllers;
 
 // Se llama a la interfaz general.
-use Api\Interface\iConstructor;
+use Api\Interfaces\iConstructor;
 
 // Se llama `AllController` y sus traits y funciones.
 use Api\Controllers\AllController;
