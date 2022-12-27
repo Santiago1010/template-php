@@ -48,12 +48,12 @@ class Users implements iEntity {
 
 	private string \$table;
 " . $this->setAttributes() . "
-	public function __construct(" . $this->setParams() . "): void {\n\$this->table = \"{\$_ENV['NAME_DB']}.{$input->getArgument('name')}\"\n" . $this->setValues() . "
+	public function __construct(" . $this->setParams() . ") {\n\t\t\$this->table = \"{\$_ENV['NAME_DB']}.{$input->getArgument('name')}\";\n" . $this->setValues() . "
 	}
 " . $this->setGettersSetters() . "
 	public function create(string \$query): string {
     	\$create = [
-    		\"create" . rtrim(strtolower($name), 's') . "\" => \"INSERT INTO {$input->getArgument('name')} (?, ?, ?, ?)\"
+    		\"create" . rtrim(strtolower($name), 's') . "\" => \"INSERT INTO \$this->table (?, ?, ?, ?)\"
     	];
 
     	return \$create[\$query];
@@ -61,7 +61,7 @@ class Users implements iEntity {
 
     public function read(string \$query): string {
     	\$read = [
-    		\"read{$name}\" => \"SELECT * FROM {$input->getArgument('name')}\"
+    		\"read{$name}\" => \"SELECT * FROM \$this->table\"
     	];
 
     	return \$read[\$query];
@@ -69,7 +69,7 @@ class Users implements iEntity {
 
     public function update(string \$query): string {
     	\$update = [
-    		\"update{$name}\" => \"UPDATE {$input->getArgument('name')} SET name = ? WHERE id = ?\"
+    		\"update{$name}\" => \"UPDATE \$this->table SET name = ? WHERE id = ?\"
     	];
 
     	return \$update[\$query];
@@ -78,7 +78,7 @@ class Users implements iEntity {
 
     public function delete(string \$query): string {
     	\$delete = [
-    		\"delete" . rtrim(strtolower($name), 's') . "\" => \"DELETE FROM {$input->getArgument('name')} WHERE id = ?\"
+    		\"delete" . rtrim(strtolower($name), 's') . "\" => \"DELETE FROM \$this->table WHERE id = ?\"
     	];
 
     	return \$delete[\$query];

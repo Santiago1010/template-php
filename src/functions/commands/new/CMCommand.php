@@ -74,10 +74,10 @@ class {$this->entity} implements iEntity {
 
 	private string \$table;
 " . $this->setAttributes() . "
-	public function __construct(" . $this->setParams() . "): void {\n\$this->table = \"{\$_ENV['NAME_DB']}.{$input->getArgument('name')}\"\n" . $this->setValues() . "
+	public function __construct(" . $this->setParams() . ") {\n\t\t\$this->table = \"{$_ENV['NAME_DB']}.{$this->name}\";\n" . $this->setValues() . "
 	}
 " . $this->setGettersSetters() . "
-	public function create(string \$query); string {
+	public function create(string \$query): string {
     	\$create = [
     		\"create" . rtrim($this->entity, 's') . "\" => \"" . $this->setCreate() . "\"
     	];
@@ -105,7 +105,7 @@ class {$this->entity} implements iEntity {
 
     public function delete(string \$query): string {
     	\$delete = [
-    		\"delete" . rtrim($this->entity, 's') . "\" => \"DELETE FROM {$this->name} WHERE {$this->columns[0]['COLUMN_NAME']} = ?\"
+    		\"delete" . rtrim($this->entity, 's') . "\" => \"DELETE FROM `{\$this->table}` WHERE {$this->columns[0]['COLUMN_NAME']} = ?\"
     	];
 
     	return \$delete[\$query];
@@ -146,6 +146,9 @@ use Api\Models\Connection\Connection;
 // Se llama `AllController` y sus traits y funciones.
 use Api\Controllers\AllController;
 
+// Se llama la entidad.
+use Api\Models\Entities\\{$this->entity};
+
 /**
  * El modelo `{$name}` es una clase de PHP que se encarga de establecer una conexión a una base de datos. Esta clase tiene un atributo privado llamado `connection` que es una instancia de la clase `Connection`, que se encarga de realizar la conexión a la base de datos. La clase `{$name}` tiene un constructor que se encarga de inicializar el atributo `connection` al invocar al método `getInstance()` de la clase `Connection`. Este método es un método estático que se encarga de crear una única instancia de la clase `Connection` para toda la aplicación y devolverla al invocarlo.
  */
@@ -160,8 +163,8 @@ final class {$name} extends AllController implements iConstructor {
 	}
 
 	// Crear un nuevo registro.
-	public function create{$object}DB({$this->entity} \${$object}): bool {
-		\$ps = \$this->connection->getPrepareStatement(\${$object}->create(\"create{$this->entity}\"));
+	public function create" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
+		\$ps = \$this->connection->getPrepareStatement(\${$object}->create(\"create" . rtrim($this->entity, 's') . "\"));
 		return \$this->connection->getBindValue(true, \$ps, \${$object}, ['']);
 	}
 
@@ -172,17 +175,17 @@ final class {$name} extends AllController implements iConstructor {
 	}
 
 	// Lee la información de 1 sólo registro.
-	public function read{$this->entity}DB({$this->entity} \${$object}): array {
+	public function read" . ucfirst($object) . "DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->read(\"read" . rtrim($this->entity, 's') . "\"));
 		return \$this->connection->getFetch(\$this->connection->getBindValue(false, \$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']), true);
 	}
 
-	public function update{$this->entity}DB({$this->entity} \${$object}): bool {
+	public function update" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->update(\"update" . rtrim($this->entity, 's') . "\"));
 		return \$this->connection->getFetch(\$this->connection->getBindValue(false, \$ps, \${$object}, [" . $this->setUpdateOrder() . "]), true);
 	}
 
-	public function delete{$this->entity}DB({$this->entity} \${$object}): bool {
+	public function delete" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->delete(\"delete" . rtrim($this->entity, 's') . "\"));
 		return \$this->connection->getFetch(\$this->connection->getBindValue(false, \$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']), true);
 	}
@@ -234,9 +237,9 @@ final class {$name} extends AllController implements iConstructor {
 		\$this->model = new " . $this->getModelName($this->name) . "();
 	}
 
-	public function create{$object}(): string {
+	public function create" . ucfirst($object) . "(): string {
 		\${$object} = " . $this->setNewObject() . "
-		return \$this->model->create{$object}DB(\${$object}) ? \$this->messsageCreated('Se ha creado el usuario.', \${$object}) : \$this->messageInternalServerError('No se ha podido crear el registro.');
+		return \$this->model->create" . ucfirst($object) . "DB(\${$object}) ? \$this->messsageCreated('Se ha creado el usuario.', \${$object}) : \$this->messageInternalServerError('No se ha podido crear el registro.');
 	}
 
 	public function read{$this->entity}(): string {
@@ -244,19 +247,19 @@ final class {$name} extends AllController implements iConstructor {
 		return \$this->messageOk('Esta es la lista completa de los registros.', \$this->model->read{$this->entity}DB(\${$object}));
 	}
 
-	public function read{$object}(): string {
+	public function read" . ucfirst($object) . "(): string {
 		\${$object} = " . $this->setNewObject() . "
-		return \$this->messageOk('Esta es la información del registro que buscaste.', \$this->model->read{$object}DB(\${$object}));
+		return \$this->messageOk('Esta es la información del registro que buscaste.', \$this->model->read" . ucfirst($object) . "DB(\${$object}));
 	}
 
-	public function update{$object}(): string {
+	public function update" . ucfirst($object) . "(): string {
 		\${$object} = " . $this->setNewObject() . "
-		return \$this->model->update{$object}DB(\${$object}) ? \$this->messsageCreated('Se ha actualizado el registro.') : \$this->messageInternalServerError('No se ha podido actualizar el registro.');
+		return \$this->model->update" . ucfirst($object) . "DB(\${$object}) ? \$this->messsageCreated('Se ha actualizado el registro.') : \$this->messageInternalServerError('No se ha podido actualizar el registro.');
 	}
 
-	public function delete{$object}(): string {
+	public function delete" . ucfirst($object) . "(): string {
 		\${$object} = " . $this->setNewObject() . "
-		return \$this->model->delete{$object}DB(\${$object}) ? \$this->messsageCreated('Se ha eliminado el registro.') : \$this->messageInternalServerError('No se ha podido eliminar el registro.');
+		return \$this->model->delete" . ucfirst($object) . "DB(\${$object}) ? \$this->messsageCreated('Se ha eliminado el registro.') : \$this->messageInternalServerError('No se ha podido eliminar el registro.');
 	}
 
 }";
@@ -286,7 +289,7 @@ final class {$name} extends AllController implements iConstructor {
 		$content = "";
 
 		foreach ($this->columns as $key => $attr) {
-			$content .= "\tprivate string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . ";\n";
+			$content .= "\tprivate ?string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . " = null;\n";
 		}
 
 		return $content;
@@ -296,7 +299,7 @@ final class {$name} extends AllController implements iConstructor {
 		$content = "";
 
 		foreach ($this->columns as $key => $attr) {
-			$content .= "string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . ", ";
+			$content .= "?string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . " = null, ";
 		}
 
 		return rtrim($content, ', ');
@@ -317,11 +320,11 @@ final class {$name} extends AllController implements iConstructor {
 
 		foreach ($this->columns as $key => $attr) {
 			$name = ucfirst($this->setNameAttr($attr['COLUMN_NAME']));
-			$content .= "\n\tpublic function get{$name}(): string {
+			$content .= "\n\tpublic function get{$name}(): ?string {
 		return \$this->" . $this->setNameAttr($attr['COLUMN_NAME']) . ";
 	}\n";
 
-			$content .= "\n\tpublic function set{$name}(string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . "): self {
+			$content .= "\n\tpublic function set{$name}(?string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . " = null): self {
 		\$this->" . $this->setNameAttr($attr['COLUMN_NAME']) . " = \$" . $this->setNameAttr($attr['COLUMN_NAME']) . ";
 		return \$this;
 	}\n";
@@ -331,7 +334,7 @@ final class {$name} extends AllController implements iConstructor {
 	}
 
 	private function setCreate(): string {
-		$sql = "INSERT INTO `{$this->name}` (";
+		$sql = "INSERT INTO `{\$this->table}` (";
 
 		foreach ($this->columns as $key => $attr) {
 			$sql .= $attr['COLUMN_NAME'] . ", ";
@@ -353,7 +356,7 @@ final class {$name} extends AllController implements iConstructor {
 	}
 
 	private function setSelect(bool $indiviudal = false): string {
-		$sql = "SELECT * FROM `{$this->name}`";
+		$sql = "SELECT * FROM `{\$this->table}`";
 
 		$sql .= $indiviudal ? " WHERE {$this->columns[0]['COLUMN_NAME']} = ?" : "";
 
@@ -361,7 +364,7 @@ final class {$name} extends AllController implements iConstructor {
 	}
 
 	private function setUpdate(): string {
-		$sql = "UPDATE `{$this->name}` SET ";
+		$sql = "UPDATE `{\$this->table}` SET ";
 
 		for ($i = 1; $i < count($this->columns); $i++) { 
 			$sql .= $this->columns[$i]['COLUMN_NAME'] . " = ?, ";
