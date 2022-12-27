@@ -4,7 +4,7 @@
 namespace Api\Functions;
 
 // Se llama a la interfaz general.
-use Api\Interface\iConstructor;
+use Api\Interfaces\iConstructor;
 
 /**
  * 

@@ -2,7 +2,7 @@
 
 namespace Api\Controllers;
 
-use Api\Interface\iConstructor;
+use Api\Interfaces\iConstructor;
 
 use Api\Functions\Security;
 
@@ -30,6 +30,10 @@ class AllController implements iConstructor {
 	private function getRequest(): object {
 		$content = json_decode(file_get_contents("php://input"), true);
         return $content === null ? (object) ($_POST + $_FILES + $_GET) : (object) $content;
+	}
+
+	protected function jsonResponse() {
+		// code...
 	}
 
 }

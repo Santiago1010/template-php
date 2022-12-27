@@ -24,7 +24,7 @@ Router::group(['prefix' => '/apiv1'], function() {
 	Router::group(['prefix' => '/test'], function() {
 		Router::get('/get', function(){
 			$prueba = new Prueba();
-			var_dump($prueba->crearArchivo());
+			var_dump($prueba->readColumns());
 		});
 	});
 });
