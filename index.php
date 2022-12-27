@@ -12,11 +12,11 @@ require_once(__DIR__ . "/vendor/autoload.php");
 
 use Dotenv\Dotenv;
 
-use Api\Http\Router;
-use Api\Controllers\Prueba;
-
 $dotenv = Dotenv::createImmutable('C:\wamp64\www\template-php');
 $dotenv->load();
+
+use Api\Http\Router;
+use Api\Controllers\Prueba;
 
 Router::init();
 

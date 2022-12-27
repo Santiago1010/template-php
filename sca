@@ -3,12 +3,15 @@
 // Incluir el autoload de Composer
 require_once(__DIR__ . "/vendor/autoload.php");
 
+use Dotenv\Dotenv;
+
 use Symfony\Component\Console\Application;
 
 // Comandos de creación.
 use Api\Functions\Commands\New\ControllerCommand;
 use Api\Functions\Commands\New\TraitCommand;
 use Api\Functions\Commands\New\FunctionCommand;
+use Api\Functions\Commands\New\EntityCommand;
 
 // Comandos de eliminación.
 use Api\Functions\Commands\Delete\FunctionCommand as DeleteFunction;
@@ -18,10 +21,14 @@ use Api\Functions\Commands\Delete\ControllerCommand as DeleteController;
 // Crear una nueva aplicación de consola
 $application = new Application();
 
+$dotenv = Dotenv::createImmutable('C:\wamp64\www\template-php');
+$dotenv->load();
+
 // Registrar tus comandos en la aplicación
 $application->add(new ControllerCommand());
 $application->add(new TraitCommand());
 $application->add(new FunctionCommand());
+$application->add(new EntityCommand());
 $application->add(new DeleteFunction());
 $application->add(new DeleteTrait());
 $application->add(new DeleteController());
