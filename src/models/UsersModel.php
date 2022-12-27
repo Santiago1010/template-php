@@ -31,29 +31,32 @@ final class UsersModel extends AllController implements iConstructor {
 	// Crear un nuevo registro.
 	public function createUserDB(Users $user): bool {
 		$ps = $this->connection->getPrepareStatement($user->create("createUser"));
-		return $this->connection->getBindValue(true, $ps, $user, ['']);
+		$ps = $this->connection->getBindValue(false, $ps, $user, ['getName']);
+		return $ps->execute();
 	}
 
 	// Lee la lista completa de los registros.
 	public function readUsersDB(Users $user): array {
 		$ps = $this->connection->getPrepareStatement($user->read("readUsers"));
-		return $this->connection->getFetch($ps, true);
+		return $this->connection->getFetch($ps);
 	}
 
 	// Lee la información de 1 sólo registro.
 	public function readUserDB(Users $user): array {
 		$ps = $this->connection->getPrepareStatement($user->read("readUser"));
-		return $this->connection->getFetch($this->connection->getBindValue(false, $ps, $user, ['getIdUser']), true);
+		return $this->connection->getFetch($this->connection->getBindValue($ps, $user, ['getIdUser']));
 	}
 
 	public function updateUserDB(Users $user): bool {
 		$ps = $this->connection->getPrepareStatement($user->update("updateUser"));
-		return $this->connection->getFetch($this->connection->getBindValue(false, $ps, $user, ['getName', 'getIdUser']), true);
+		$ps = $this->connection->getBindValue($ps, $user, ['getName', 'getIdUser']);
+		return $ps->execute();
 	}
 
 	public function deleteUserDB(Users $user): bool {
 		$ps = $this->connection->getPrepareStatement($user->delete("deleteUser"));
-		return $this->connection->getFetch($this->connection->getBindValue(false, $ps, $user, ['getIdUser']), true);
+		$ps = $this->connection->getBindValue($ps, $user, ['getIdUser']);
+		return $ps->execute();
 	}
 
 }

@@ -165,7 +165,8 @@ final class {$name} extends AllController implements iConstructor {
 	// Crear un nuevo registro.
 	public function create" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->create(\"create" . rtrim($this->entity, 's') . "\"));
-		return \$this->connection->getBindValue(true, \$ps, \${$object}, ['']);
+		\$ps = \$this->connection->getBindValue(\$ps, \${$object});
+		return ;
 	}
 
 	// Lee la lista completa de los registros.

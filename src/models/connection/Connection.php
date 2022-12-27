@@ -38,59 +38,48 @@ class Connection {
 		return $this->connection->prepare($sql);
 	}
 
-	public function getBindValue(bool $inverted, $ps, Object $object, array $function) {
-  		// Obtiene todos los métodos de la clase del objeto
-		$methods = get_class_methods($object);
-  		// Contador de parámetros
-		$count = 1;
+	public function getBindValue($ps, $object, ?array $methods = []): bool {
+		$counter = 1;
 
-  		// Si el valor de `$inverted` es falso, se itera sobre el arreglo de funciones proporcionado y se asigna el valor de cada función al parámetro de la consulta preparada
-		if (!$inverted) {
-			foreach ($function as $key => $value) {
-				$ps->bindValue($count++, $object->$value(), $this->setType($object->$value()));
-			}
-		}else {
-  		// Si el valor de `$inverted` es verdadero, se eliminan del arreglo de métodos las funciones proporcionadas y se itera sobre el arreglo restante para asignar los valores de cada función al parámetro de la consulta preparada
-			$index = null;
-			for ($i = 0; $i < count($function); $i++) { 
-				$index = array_search($function[$i], $methods);
-				unset($methods[$index]);
-			}
-			$methods = array_values($methods);
-			foreach ($methods as $key => $value) {
-				$ps->bindValue($count++, $object->$value());
-			}
+  		// Filtramos sólo los métodos que empiecen con "get"
+		$methods = array_filter(empty($methods) ? get_class_methods($object) : $methods, function($method) {
+			return strpos($method, 'get') === 0;
+		});
+
+  		// Iteramos sobre los métodos y asignamos sus valores devueltos a los parámetros del prepared statement
+		foreach ($methods as $method) {
+    		// Asignamos el valor devuelto al parámetro del prepared statement con el mismo nombre que el método
+			$ps->bindValue($counter, $object->$method(), $this->setType($value));
+			$counter++;
 		}
 
-  		// Se devuelve la consulta preparada con los parámetros asignados
+  		// Ejecutamos la consulta preparada y devolvemos el resultado
 		return $ps;
 	}
 
+	private function setTypes(string $value): int {
 
-	private function setType($var) {
-		$type = gettype($var);
-		switch ($type) {
+  		// Comprobamos el tipo de dato de $value
+		switch (gettype($value)) {
+
 			case 'integer':
-			case 'boolean':
 			return PDO::PARAM_INT;
-			break;
 
-			case 'string':
-			return PDO::PARAM_STR;
-			break;
+			case 'boolean':
+			return PDO::PARAM_BOOL;
+
+			case 'NULL':
+			return PDO::PARAM_NULL;
 
 			default:
 			return PDO::PARAM_STR;
-			break;
+
 		}
+
 	}
 
-	public function getFetch($PreparedStatement, $option) {
-		return $PreparedStatement->execute() ? (!$option ? $PreparedStatement->fetch() : $PreparedStatement->fetchAll()) : $PreparedStatement->errorInfo();
-	}
-
-	public function getExecute($PreparedStatement) {
-		return $PreparedStatement->execute() ? true : $PreparedStatement->errorInfo();
+	public function getFetch($preparedStatement): array {
+		return $preparedStatement->execute()->rowCount() === 1 ? $preparedStatement->fetch() : ($preparedStatement->rowCount() > 1 ? $preparedStatement->fetchAll() : $preparedStatement->errorInfo());
 	}
 
 }
