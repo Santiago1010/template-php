@@ -32,29 +32,31 @@ class CMCommand extends Command {
 		$this->entity = $this->getEntityName($input);
 
 		// Crear la entidad.
-		$this->newEntity($output);
+		$entity = $this->newEntity($output);
 
 		// Crear el modelo.
-		$this->newModel($output);
+		$model = $this->newModel($output);
 
 		// Crear el controlador.
-		$this->newController($output);
+		$controller = $this->newController($output);
 
-		$index = file_get_contents('index.php');
+		if ($entity === true && $model === true && $controller === true) {
+			$index = file_get_contents('index.php');
 
-		preg_match('/^use\sApi\\Http\\Router;$/', $index, $router);
+			preg_match('/\/\/\sImportar\scontroladores\./', $index, $result);
+			
+			$resultLine = $result[0];
 
-		$routerLine = end($router[0]);
+			$newUse = $resultLine . "\nuse Api\\Controllers\\" . $this->getControllerName($this->name) . ";";
+			$index = str_replace($resultLine, $newUse, $index);
 
-		$newUse = $routerLine . "\n\nuse Api\\Controllers\\" . $this->getControllerName($this->name);
-		$index = str_replace($routerLine, $newUse, $index);
-
-		file_put_contents('index.php', $index);
+			file_put_contents('index.php', $index);
+		}
 
 		return Command::SUCCESS;
 	}
 
-	private function newEntity(OutputInterface $output) {
+	private function newEntity(OutputInterface $output): bool {
 		// Crear el contenido de la entidad
 		$content = "<?php
 
@@ -77,7 +79,7 @@ class {$this->entity} implements iEntity {
 " . $this->setGettersSetters() . "
 	public function create(string \$query); string {
     	\$create = [
-    		\"create" . rtrim($this->entity, 's') . "\" => " . $this->setCreate() . "
+    		\"create" . rtrim($this->entity, 's') . "\" => \"" . $this->setCreate() . "\"
     	];
 
     	return \$create[\$query];
@@ -85,8 +87,8 @@ class {$this->entity} implements iEntity {
 
     public function read(string \$query): string {
     	\$read = [
-    		\"read{$this->entity}\" => " . $this->setSelect(false) . ",
-    		\"read" . rtrim($this->entity, 's') . "\" => " . $this->setSelect(true) . ",
+    		\"read{$this->entity}\" => \"" . $this->setSelect(false) . "\",
+    		\"read" . rtrim($this->entity, 's') . "\" => \"" . $this->setSelect(true) . "\",
     	];
 
     	return \$read[\$query];
@@ -94,7 +96,7 @@ class {$this->entity} implements iEntity {
 
     public function update(string \$query): string {
     	\$update = [
-    		\"update" . rtrim($this->entity, 's') . "\" => " . $this->setUpdate() . "
+    		\"update" . rtrim($this->entity, 's') . "\" => \"" . $this->setUpdate() . "\"
     	];
 
     	return \$update[\$query];
@@ -103,7 +105,7 @@ class {$this->entity} implements iEntity {
 
     public function delete(string \$query): string {
     	\$delete = [
-    		\"delete" . rtrim($this->entity, 's') . "\" => \"DELETE FROM {$this->name} WHERE {$this->attrs[0]['COLUMN_NAME']} = ?\"
+    		\"delete" . rtrim($this->entity, 's') . "\" => \"DELETE FROM {$this->name} WHERE {$this->columns[0]['COLUMN_NAME']} = ?\"
     	];
 
     	return \$delete[\$query];
@@ -115,14 +117,16 @@ class {$this->entity} implements iEntity {
 		$this->defineLocalRoute('./src/models/entities/');
 
 		// Guardar la entidad en la ruta local especificada
-		if ($this->saveFile('./src/models/entities/', "{$this->name}.php", $content)) {
-			$output->writeln("La entidad '$this->name' ha sido creada exitosamente en la ruta: './src/models/entities/{$this->name}.php'");
+		if ($this->saveFile('./src/models/entities/', "{$this->entity}.php", $content)) {
+			$output->writeln("La entidad '{$this->entity}' ha sido creada exitosamente en la ruta: './src/models/entities/{{$this->entity}}.php'");
+			return true;
 		} else {
-			$output->writeln("La entidad '$this->name' ya se encuentra creada en './src/models/entities/{$this->name}.php'.");
+			$output->writeln("La entidad '{$this->entity}' ya se encuentra creada en './src/models/entities/{$this->entity}.php'.");
+			return false;
 		}
 	}
 
-	private function newModel(OutputInterface $output) {
+	private function newModel(OutputInterface $output): bool {
 		$name = $this->getModelName($this->name);
 
 		$object = rtrim($this->name, 's');
@@ -186,10 +190,16 @@ final class {$name} extends AllController implements iConstructor {
 }";
 
 		// Guardar el modelo en la ruta local especificada
-		$this->saveFile('./src/models/', "{$name}.php", $content) ? $output->writeln("El modelo '{$name}' ha sido creado exitosamente en la ruta: './src/models/{$name}.php'") : $output->writeln("El modelo '{$name}' ya se encuentra creado en './src/models/{$name}.php'.");
+		if ($this->saveFile('./src/models/', "{$name}.php", $content)) {
+		 	$output->writeln("El modelo '{$name}' ha sido creado exitosamente en la ruta: './src/models/{$name}.php'");
+		 	return true;
+		 } else {
+		 	$output->writeln("El modelo '{$name}' ya se encuentra creado en './src/models/{$name}.php'.");
+		 	return false;
+		 }
 	}
 
-	private function newController(OutputInterface $output) {
+	private function newController(OutputInterface $output): bool {
 		$name = $this->getControllerName($this->name);
 
 		$object = rtrim($this->name, 's');
@@ -209,7 +219,7 @@ use Api\Controllers\AllController;
 use Api\Models\\" . $this->getModelName($this->name) . ";
 
 // Se llama la entidad.
-use Api\Models\Entities\{$this->entity};
+use Api\Models\Entities\\{$this->entity};
 
 /**
  * Se define una clase controladora final llamada `$name` que extiende de `AllController` (el cuál hereda de todas las funciones almacenadas en './src/functions/' y traits almacenados en './src/traits/') e implementa la interfaz `iConstructor`. La clase tiene un método constructor que llama al método constructor de la clase padre y luego llama al método `defineLogPath` que definirá la ruta en donde se almacenarán los logs creados (por defecto se almacenan en './src/logs/') con el resultado de la función `debug_backtrace()[0]` (que envía información como el nombre de la clase, el archivo, ubicación, etc.) como argumento.
@@ -252,14 +262,20 @@ final class {$name} extends AllController implements iConstructor {
 }";
 
 		// Guardar el controlador en la ruta local especificada
-		$this->saveFile('./src/controllers/', "$name.php", $content) ? $output->writeln("El controlador '$name' ha sido creado exitosamente en la ruta: './src/controllers/" . $name . ".php'") : $output->writeln("El controlador '$name' ya se encuentra creado en './src/controllers/{$name}.php'.");
+		if ($this->saveFile('./src/controllers/', "$name.php", $content)) {
+			$output->writeln("El controlador '$name' ha sido creado exitosamente en la ruta: './src/controllers/" . $name . ".php'");
+		 	return true;
+		} else {
+			$output->writeln("El controlador '$name' ya se encuentra creado en './src/controllers/{$name}.php'.");
+			return false;
+		}
 	}
 
 	private function setNewObject(): string {
 		$content = "new " . $this->entity . "(";
 
 		foreach ($this->columns as $key => $column) {
-			$content .= "\$this->request->" . $this->setNameAttr($column) . ", ";
+			$content .= "\$this->request->" . $this->setNameAttr($column['COLUMN_NAME']) . ", ";
 		}
 
 		$content = rtrim($content, ", ");
@@ -317,37 +333,43 @@ final class {$name} extends AllController implements iConstructor {
 	private function setCreate(): string {
 		$sql = "INSERT INTO `{$this->name}` (";
 
-		foreach ($attrs as $key => $attr) {
+		foreach ($this->columns as $key => $attr) {
 			$sql .= $attr['COLUMN_NAME'] . ", ";
 		}
 
-		$sql rtrim($sql, ", ");
+		$sql = rtrim($sql, ", ");
 
 		$sql .= ") VALUES (";
 
-		foreach ($attrs as $key => $attr) {
+		foreach ($this->columns as $key => $attr) {
 			$sql .= "?, ";
 		}
 
-		$sql rtrim($sql, ", ");
+		$sql = rtrim($sql, ", ");
 
 		$sql .= ")";
+
+		return $sql;
 	}
 
 	private function setSelect(bool $indiviudal = false): string {
-		$sql = "SELECT * FROM `{$this->name}`" . $indiviudal ? " WHERE " . $this->attrs[0]['COLUMN_NAME'] : "";
+		$sql = "SELECT * FROM `{$this->name}`";
+
+		$sql .= $indiviudal ? " WHERE {$this->columns[0]['COLUMN_NAME']} = ?" : "";
+
+		return $sql;
 	}
 
 	private function setUpdate(): string {
 		$sql = "UPDATE `{$this->name}` SET ";
 
-		for ($i = 1; $i < count($this->attrs); $i++) { 
-			$sql .= $this->attrs[$i]['COLUMN_NAME'] " = ?, ";
+		for ($i = 1; $i < count($this->columns); $i++) { 
+			$sql .= $this->columns[$i]['COLUMN_NAME'] . " = ?, ";
 		}
 
 		$sql = rtrim($sql, ", ");
 
-		$sql .= " WHERE " . $this->attrs[0]['COLUMN_NAME'] . " = ?";
+		$sql .= " WHERE " . $this->columns[0]['COLUMN_NAME'] . " = ?";
 
 		return $sql;
 	}
@@ -359,12 +381,12 @@ final class {$name} extends AllController implements iConstructor {
 			$order .= "'get" . ucfirst($this->setNameAttr($this->columns[$i]['COLUMN_NAME'])) . "', ";
 		}
 
-		$order .= "'get" . ucfirst($this->setNameAttr($this->columns[$i]['COLUMN_NAME'])) . "'";
+		$order .= "'get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "'";
 
 		return $order;
 	}
 
-	public function setNameAttr(string $name) {
+	public function setNameAttr($name) {
 		$name = str_replace("-", "_", $name);
 		$name = str_replace(":", "_", $name);
 		$name = str_replace(" ", "_", $name);
