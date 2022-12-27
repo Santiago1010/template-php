@@ -18,6 +18,8 @@ use Api\Functions\Commands\New\ModelCommand;
 use Api\Functions\Commands\Delete\FunctionCommand as DeleteFunction;
 use Api\Functions\Commands\Delete\TraitCommand as DeleteTrait;
 use Api\Functions\Commands\Delete\ControllerCommand as DeleteController;
+use Api\Functions\Commands\Delete\EntityCommand as DeleteEntity;
+use Api\Functions\Commands\Delete\ModelCommand as DeleteModel;
 
 // Crear una nueva aplicación de consola
 $application = new Application();
@@ -34,6 +36,8 @@ $application->add(new ModelCommand());
 $application->add(new DeleteFunction());
 $application->add(new DeleteTrait());
 $application->add(new DeleteController());
+$application->add(new DeleteEntity());
+$application->add(new DeleteModel());
 
 // Ejecutar la aplicación
 $application->run();
