@@ -49,7 +49,7 @@ class Connection {
 			// Almacenamos el valor de la función en la variable `$valor`.
 			$value = $object->$method();
     		// Asignamos el valor devuelto al parámetro del prepared statement con el mismo nombre que el método
-			$ps->bindParam(lcfirst(substr($method, 3)), $value, $this->setTypes($value));
+			$ps->bindParam(":" . lcfirst(substr($method, 3)), $value, $this->setTypes($value));
 		}
 
   		// Devolvemos el resultado
@@ -78,16 +78,18 @@ class Connection {
 	}
 
 	public function getFetch($preparedStatement): array {
-  		// Si la consulta se ejecutó correctamente
-		return $preparedStatement->execute()
-    	// Si la consulta devolvió un único registro, devolvemos el registro
-		? ($preparedStatement->rowCount() === 1 ? $preparedStatement->fetch()
-   			 // Si la consulta devolvió varios registros, devolvemos todos los registros
-		: ($preparedStatement->rowCount() > 1 ? $preparedStatement->fetchAll()
-    	// Si la consulta no se ejecutó correctamente, devolvemos la información de error
-		: $preparedStatement->errorInfo()))
-    	// Si la consulta no se ejecutó correctamente, devolvemos la información de error
-		: $preparedStatement->errorInfo();
+		// Ejecutamos la consulta preparada
+		$execute = $preparedStatement->execute();
+
+		// Si la ejecución fue exitosa, devolvemos el resultado en un array con el status y la información
+		if ($execute) {
+			$info = $preparedStatement->rowCount() === 1 ? $preparedStatement->fetch() : ($preparedStatement->rowCount() > 1 ? $preparedStatement->fetchAll() : $preparedStatement->errorInfo());
+			return ['status' => true, 'info' => $info];
+		}
+		// Si hubo un error, devolvemos el status y el error
+		else {
+			return ['status' => false, 'info' => $preparedStatement->errorInfo()];
+		}
 	}
 
 }
