@@ -143,9 +143,6 @@ use Api\Interfaces\iConstructor;
 // Se llama la conexión a la base de datos.
 use Api\Models\Connection\Connection;
 
-// Se llama `AllController` y sus traits y funciones.
-use Api\Controllers\AllController;
-
 // Se llama la entidad.
 use Api\Models\Entities\\{$this->entity};
 
@@ -166,31 +163,40 @@ final class {$name} extends AllController implements iConstructor {
 	public function create" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->create(\"create" . rtrim($this->entity, 's') . "\"));
 		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, [" . $this->ignoreId() . "]);
-		return \$ps->execute();
+		
+		return \$ps->execute() ? ['status' => true, 'info' => 'Se ha creado el {registro} correctamente.'] : ['status' => false, 'info' => 'No se ha podido crear el {registro}. Ya hemos enviado el reporte.', 'error' => \$ps->errorInfo()];
 	}
 
 	// Lee la lista completa de los registros.
 	public function read{$this->entity}DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->read(\"read{$this->entity}\"));
-		return \$this->connection->getFetch(\$ps);
+
+		\$response = \$this->connection->getFetch($ps);
+
+		return \$response['status'] ? \$response : ['status' => false, 'info' => 'Ha ocurrido un error al leer los {registro}s. Ya hemos reportado el problema.', 'error' => \$response['info']];
 	}
 
 	// Lee la información de 1 sólo registro.
 	public function read" . ucfirst($object) . "DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->read(\"read" . rtrim($this->entity, 's') . "\"));
-		return \$this->connection->getFetch(\$this->connection->getBindParam(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']));
+
+		\$response = \$this->connection->getFetch($ps);
+
+		return \$response['status'] ? \$response : ['status' => false, 'info' => 'Ha ocurrido un error al leer el {registro}. Ya hemos reportado el problema.', 'error' => \$response['info']];
 	}
 
 	public function update" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->update(\"update" . rtrim($this->entity, 's') . "\"));
 		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, [" . $this->setUpdateOrder() . "]);
-		return \$ps->execute();
+		
+		return \$ps->execute() ? ['status' => true, 'info' => 'Se ha actualizado el {registro} correctamente.'] : ['status' => false, 'info' => 'No se ha podido actualizar el {registro}. Ya hemos enviado el reporte.', 'error' => \$ps->errorInfo()];
 	}
 
 	public function delete" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->delete(\"delete" . rtrim($this->entity, 's') . "\"));
 		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']);
-		return \$ps->execute();
+		
+		return \$ps->execute() ? ['status' => true, 'info' => 'Se ha eliminado el {registro} correctamente.'] : ['status' => false, 'info' => 'No se ha podido eliminar el {registro}. Ya hemos enviado el reporte.', 'error' => \$ps->errorInfo()];
 	}
 
 }";

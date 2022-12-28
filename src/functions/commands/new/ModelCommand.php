@@ -37,13 +37,10 @@ use Api\Interface\iConstructor;
 // Se llama la conexión a la base de datos.
 use Api\Models\Connection\Connection;
 
-// Se llama `AllController` y sus traits y funciones.
-use Api\Controllers\AllController;
-
 /**
  * La clase `{$name}` es una clase de PHP que se encarga de establecer una conexión a una base de datos. Esta clase tiene un atributo privado llamado `connection` que es una instancia de la clase `Connection`, que se encarga de realizar la conexión a la base de datos. La clase `{$name}` tiene un constructor que se encarga de inicializar el atributo `connection` al invocar al método `getInstance()` de la clase `Connection`. Este método es un método estático que se encarga de crear una única instancia de la clase `Connection` para toda la aplicación y devolverla al invocarlo.
  */
-final class {$name} extends AllController implements iConstructor {
+final class {$name} implements iConstructor {
 
 	// Se declara una atributo de tipo `Connection`.
 	private Connection \$connection;
