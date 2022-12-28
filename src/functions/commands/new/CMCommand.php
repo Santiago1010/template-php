@@ -160,7 +160,7 @@ final class {$name} implements iConstructor {
 	}
 
 	// Crear un nuevo {registro}.
-	public function create" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
+	public function create" . ucfirst($object) . "DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->create(\"create" . rtrim($this->entity, 's') . "\"));
 		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, [" . $this->ignoreId() . "]);
 		
@@ -186,7 +186,7 @@ final class {$name} implements iConstructor {
 	}
 
 	// Actualizar un {registro}.
-	public function update" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
+	public function update" . ucfirst($object) . "DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->update(\"update" . rtrim($this->entity, 's') . "\"));
 		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, [" . $this->setUpdateOrder() . "]);
 		
@@ -194,7 +194,7 @@ final class {$name} implements iConstructor {
 	}
 
 	// Eliminar un {registro}.
-	public function delete" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
+	public function delete" . ucfirst($object) . "DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->delete(\"delete" . rtrim($this->entity, 's') . "\"));
 		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns['info'][0]['COLUMN_NAME'])) . "']);
 		
@@ -253,11 +253,11 @@ final class {$name} extends AllController implements iConstructor {
 		\$response = \$this->model->create" . ucfirst($object) . "DB(\${$object});
 
 		if (\$response['status']) {
-			\$this->info(\"Se creó un nuevo registro con ID {\${$object}->get" . ucfirst($this->columns['info'][0]['COLUMN_NAME']) . "()}\", debug_backtrace()[0]['function']);
-			return \$this->messsageCreated(\$response['info']);
+			\$this->info(\"Se creó un nuevo registro con ID \" . \${$object}->get" . ucfirst($this->setNameAttr($this->columns['info'][0]['COLUMN_NAME'])) . "(), debug_backtrace()[0]['function']);
+			return \$this->jsonParser(\$this->messsageCreated(\$response['info']));
 		} else {
 			\$this->error(\"No se ha podido crear el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
-			return \$this->messageInternalServerError(\$response['info']);
+			return \$this->jsonParser(\$this->messageInternalServerError(\$response['info']));
 		}
 	}
 
@@ -266,10 +266,10 @@ final class {$name} extends AllController implements iConstructor {
 		\$response = \$this->model->read" . ucfirst($object) . "sDB(\${$object});
 
 		if (\$response['status']) {
-			return \$this->messageOk('Esta es la lista completa de los registros.', \$response['info']);
+			return \$this->jsonParser(\$this->messageOk('Esta es la lista completa de los registros.', \$response['info']));
 		} else {
 			\$this->error(\"No se ha podido actualizar el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
-			return \$this->messageInternalServerError(\$response['info'], \$response['info']);
+			return \$this->jsonParser(\$this->messageInternalServerError(\$response['info'], \$response['info']));
 		}
 	}
 
@@ -278,10 +278,10 @@ final class {$name} extends AllController implements iConstructor {
 		\$response = \$this->model->read" . ucfirst($object) . "DB(\${$object});
 
 		if (\$response['status']) {
-			return \$this->messageOk('Esta es la información el registro solicitado.', \$response['info']);
+			return \$this->jsonParser(\$this->messageOk('Esta es la información el registro solicitado.', \$response['info']));
 		} else {
 			\$this->error(\"No se ha podido leer el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
-			return \$this->messageInternalServerError(\$response['info'], \$response['error']);
+			return \$this->jsonParser(\$this->messageInternalServerError(\$response['info'], \$response['error']));
 		}
 	}
 
@@ -290,10 +290,10 @@ final class {$name} extends AllController implements iConstructor {
 		\$response = \$this->model->update" . ucfirst($object) . "DB(\${$object});
 
 		if (\$response['status']) {
-			return \$this->messsageCreated(\$response['info']);
+			return \$this->jsonParser(\$this->messsageCreated(\$response['info']));
 		} else {
 			\$this->error(\"No se ha podido actualizar el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
-			return \$this->messageInternalServerError(\$response['info']);
+			return \$this->jsonParser(\$this->messageInternalServerError(\$response['info']));
 		}
 	}
 
@@ -302,11 +302,11 @@ final class {$name} extends AllController implements iConstructor {
 		\$response = \$this->model->delete" . ucfirst($object) . "DB(\${$object});
 
 		if (\$response['status']) {
-			\$this->info(\"Se ha eliminado el registro con ID '{\${$object}->get" . ucfirst($this->columns['info'][0]['COLUMN_NAME']) . "()}'\", debug_backtrace()[0]['function']);
-			return \$this->messsageCreated(\$response['info']);
+			\$this->info(\"Se ha eliminado el registro con ID \" . \${$object}->get" . ucfirst($this->setNameAttr($this->columns['info'][0]['COLUMN_NAME'])) . "(), debug_backtrace()[0]['function']);
+			return \$this->jsonParser(\$this->messsageCreated(\$response['info']));
 		} else {
 			\$this->error(\"No se ha podido eliminar el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
-			return \$this->messageInternalServerError(\$response['info']);
+			return \$this->jsonParser(\$this->messageInternalServerError(\$response['info']));
 		}
 	}
 

@@ -32,8 +32,8 @@ class AllController implements iConstructor {
         return $content === null ? (object) ($_POST + $_FILES + $_GET) : (object) $content;
 	}
 
-	protected function jsonResponse() {
-		// code...
+	protected function jsonParser(array $response): string {
+		return json_encode($response, JSON_UNESCAPED_UNICODE);
 	}
 
 }
