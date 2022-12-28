@@ -38,7 +38,7 @@ class Connection {
 		return $this->connection->prepare($sql);
 	}
 
-	public function getBindValue($ps, $object, ?array $methods = []) {
+	public function getBindParam($ps, $object, ?array $methods = []) {
   		// Filtramos sólo los métodos que empiecen con "get"
 		$methods = array_filter(empty($methods) ? get_class_methods($object) : $methods, function($method) {
 			return strpos($method, 'get') === 0;
