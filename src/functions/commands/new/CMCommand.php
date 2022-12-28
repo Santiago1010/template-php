@@ -105,7 +105,7 @@ class {$this->entity} implements iEntity {
 
     public function delete(string \$query): string {
     	\$delete = [
-    		\"delete" . rtrim($this->entity, 's') . "\" => \"DELETE FROM `{\$this->table}` WHERE {$this->columns[0]['COLUMN_NAME']} = ?\"
+    		\"delete" . rtrim($this->entity, 's') . "\" => \"DELETE FROM {\$this->table} WHERE {$this->columns[0]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns[0]['COLUMN_NAME']) . "\"
     	];
 
     	return \$delete[\$query];
@@ -165,7 +165,7 @@ final class {$name} extends AllController implements iConstructor {
 	// Crear un nuevo registro.
 	public function create" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->create(\"create" . rtrim($this->entity, 's') . "\"));
-		\$ps = \$this->connection->getBindValue(\$ps, \${$object}, [" . $this->ignoreId() . "]);
+		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, [" . $this->ignoreId() . "]);
 		return \$ps->execute();
 	}
 
@@ -178,18 +178,18 @@ final class {$name} extends AllController implements iConstructor {
 	// Lee la información de 1 sólo registro.
 	public function read" . ucfirst($object) . "DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->read(\"read" . rtrim($this->entity, 's') . "\"));
-		return \$this->connection->getFetch(\$this->connection->getBindValue(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']));
+		return \$this->connection->getFetch(\$this->connection->getBindParam(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']));
 	}
 
 	public function update" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->update(\"update" . rtrim($this->entity, 's') . "\"));
-		\$ps = \$this->connection->getBindValue(\$ps, \${$object}, [" . $this->setUpdateOrder() . "]);
+		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, [" . $this->setUpdateOrder() . "]);
 		return \$ps->execute();
 	}
 
 	public function delete" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->delete(\"delete" . rtrim($this->entity, 's') . "\"));
-		\$ps = \$this->connection->getBindValue(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']);
+		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']);
 		return \$ps->execute();
 	}
 
@@ -337,7 +337,7 @@ final class {$name} extends AllController implements iConstructor {
 	}
 
 	private function setCreate(): string {
-		$sql = "INSERT INTO `{\$this->table}` (";
+		$sql = "INSERT INTO {\$this->table} (";
 
 		foreach ($this->columns as $key => $attr) {
 			$sql .= $attr['COLUMN_NAME'] . ", ";
@@ -348,7 +348,7 @@ final class {$name} extends AllController implements iConstructor {
 		$sql .= ") VALUES (";
 
 		foreach ($this->columns as $key => $attr) {
-			$sql .= "?, ";
+			$sql .= ":" . $this->setNameAttr($attr['COLUMN_NAME']) . ", ";
 		}
 
 		$sql = rtrim($sql, ", ");
@@ -359,23 +359,23 @@ final class {$name} extends AllController implements iConstructor {
 	}
 
 	private function setSelect(bool $indiviudal = false): string {
-		$sql = "SELECT * FROM `{\$this->table}`";
+		$sql = "SELECT * FROM " . "\$this->table";
 
-		$sql .= $indiviudal ? " WHERE {$this->columns[0]['COLUMN_NAME']} = ?" : "";
+		$sql .= $indiviudal ? " WHERE {$this->columns[0]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns[0]['COLUMN_NAME']) : "";
 
 		return $sql;
 	}
 
 	private function setUpdate(): string {
-		$sql = "UPDATE `{\$this->table}` SET ";
+		$sql = "UPDATE {\$this->table} SET ";
 
 		for ($i = 1; $i < count($this->columns); $i++) { 
-			$sql .= $this->columns[$i]['COLUMN_NAME'] . " = ?, ";
+			$sql .= "{$this->columns[$i]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns[$i]['COLUMN_NAME']) . ", ";
 		}
 
 		$sql = rtrim($sql, ", ");
 
-		$sql .= " WHERE " . $this->columns[0]['COLUMN_NAME'] . " = ?";
+		$sql .= " WHERE {$this->columns[0]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns[0]['COLUMN_NAME']);
 
 		return $sql;
 	}
