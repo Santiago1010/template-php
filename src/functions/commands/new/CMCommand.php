@@ -105,7 +105,7 @@ class {$this->entity} implements iEntity {
 
     public function delete(string \$query): string {
     	\$delete = [
-    		\"delete" . rtrim($this->entity, 's') . "\" => \"DELETE FROM {\$this->table} WHERE {$this->columns[0]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns[0]['COLUMN_NAME']) . "\"
+    		\"delete" . rtrim($this->entity, 's') . "\" => \"DELETE FROM {\$this->table} WHERE {$this->columns['info'][0]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns['info'][0]['COLUMN_NAME']) . "\"
     	];
 
     	return \$delete[\$query];
@@ -149,7 +149,7 @@ use Api\Models\Entities\\{$this->entity};
 /**
  * El modelo `{$name}` es una clase de PHP que se encarga de establecer una conexión a una base de datos. Esta clase tiene un atributo privado llamado `connection` que es una instancia de la clase `Connection`, que se encarga de realizar la conexión a la base de datos. La clase `{$name}` tiene un constructor que se encarga de inicializar el atributo `connection` al invocar al método `getInstance()` de la clase `Connection`. Este método es un método estático que se encarga de crear una única instancia de la clase `Connection` para toda la aplicación y devolverla al invocarlo.
  */
-final class {$name} extends AllController implements iConstructor {
+final class {$name} implements iConstructor {
 
 	// Se declara una atributo de tipo `Connection`.
 	private Connection \$connection;
@@ -159,7 +159,7 @@ final class {$name} extends AllController implements iConstructor {
 		\$this->connection = Connection::getInstance();
 	}
 
-	// Crear un nuevo registro.
+	// Crear un nuevo {registro}.
 	public function create" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->create(\"create" . rtrim($this->entity, 's') . "\"));
 		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, [" . $this->ignoreId() . "]);
@@ -167,24 +167,25 @@ final class {$name} extends AllController implements iConstructor {
 		return \$ps->execute() ? ['status' => true, 'info' => 'Se ha creado el {registro} correctamente.'] : ['status' => false, 'info' => 'No se ha podido crear el {registro}. Ya hemos enviado el reporte.', 'error' => \$ps->errorInfo()];
 	}
 
-	// Lee la lista completa de los registros.
+	// Lee la lista completa de los {registro}s.
 	public function read{$this->entity}DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->read(\"read{$this->entity}\"));
 
-		\$response = \$this->connection->getFetch($ps);
+		\$response = \$this->connection->getFetch(\$ps);
 
 		return \$response['status'] ? \$response : ['status' => false, 'info' => 'Ha ocurrido un error al leer los {registro}s. Ya hemos reportado el problema.', 'error' => \$response['info']];
 	}
 
-	// Lee la información de 1 sólo registro.
+	// Lee la información de 1 sólo {registro}.
 	public function read" . ucfirst($object) . "DB({$this->entity} \${$object}): array {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->read(\"read" . rtrim($this->entity, 's') . "\"));
 
-		\$response = \$this->connection->getFetch($ps);
+		\$response = \$this->connection->getFetch(\$ps);
 
 		return \$response['status'] ? \$response : ['status' => false, 'info' => 'Ha ocurrido un error al leer el {registro}. Ya hemos reportado el problema.', 'error' => \$response['info']];
 	}
 
+	// Actualizar un {registro}.
 	public function update" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->update(\"update" . rtrim($this->entity, 's') . "\"));
 		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, [" . $this->setUpdateOrder() . "]);
@@ -192,9 +193,10 @@ final class {$name} extends AllController implements iConstructor {
 		return \$ps->execute() ? ['status' => true, 'info' => 'Se ha actualizado el {registro} correctamente.'] : ['status' => false, 'info' => 'No se ha podido actualizar el {registro}. Ya hemos enviado el reporte.', 'error' => \$ps->errorInfo()];
 	}
 
+	// Eliminar un {registro}.
 	public function delete" . ucfirst($object) . "DB({$this->entity} \${$object}): bool {
 		\$ps = \$this->connection->getPrepareStatement(\${$object}->delete(\"delete" . rtrim($this->entity, 's') . "\"));
-		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "']);
+		\$ps = \$this->connection->getBindParam(\$ps, \${$object}, ['get" . ucfirst($this->setNameAttr($this->columns['info'][0]['COLUMN_NAME'])) . "']);
 		
 		return \$ps->execute() ? ['status' => true, 'info' => 'Se ha eliminado el {registro} correctamente.'] : ['status' => false, 'info' => 'No se ha podido eliminar el {registro}. Ya hemos enviado el reporte.', 'error' => \$ps->errorInfo()];
 	}
@@ -248,27 +250,64 @@ final class {$name} extends AllController implements iConstructor {
 
 	public function create" . ucfirst($object) . "(): string {
 		\${$object} = " . $this->setNewObject() . "
-		return \$this->model->create" . ucfirst($object) . "DB(\${$object}) ? \$this->messsageCreated('Se ha creado el usuario.', \${$object}) : \$this->messageInternalServerError('No se ha podido crear el registro.');
+		\$response = \$this->model->create" . ucfirst($object) . "DB(\${$object});
+
+		if (\$response['status']) {
+			\$this->info(\"Se creó un nuevo registro con ID {\${$object}->get" . ucfirst($this->columns['info'][0]['COLUMN_NAME']) . "()}\", debug_backtrace()[0]['function']);
+			return \$this->messsageCreated(\$response['info']);
+		} else {
+			\$this->error(\"No se ha podido crear el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
+			return \$this->messageInternalServerError(\$response['info']);
+		}
 	}
 
 	public function read{$this->entity}(): string {
 		\${$object} = " . $this->setNewObject() . "
-		return \$this->messageOk('Esta es la lista completa de los registros.', \$this->model->read{$this->entity}DB(\${$object}));
+		\$response = \$this->model->read" . ucfirst($object) . "sDB(\${$object});
+
+		if (\$response['status']) {
+			return \$this->messageOk('Esta es la lista completa de los registros.', \$response['info']);
+		} else {
+			\$this->error(\"No se ha podido actualizar el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
+			return \$this->messageInternalServerError(\$response['info'], \$response['info']);
+		}
 	}
 
 	public function read" . ucfirst($object) . "(): string {
 		\${$object} = " . $this->setNewObject() . "
-		return \$this->messageOk('Esta es la información del registro que buscaste.', \$this->model->read" . ucfirst($object) . "DB(\${$object}));
+		\$response = \$this->model->read" . ucfirst($object) . "DB(\${$object});
+
+		if (\$response['status']) {
+			return \$this->messageOk('Esta es la información el registro solicitado.', \$response['info']);
+		} else {
+			\$this->error(\"No se ha podido leer el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
+			return \$this->messageInternalServerError(\$response['info'], \$response['error']);
+		}
 	}
 
 	public function update" . ucfirst($object) . "(): string {
 		\${$object} = " . $this->setNewObject() . "
-		return \$this->model->update" . ucfirst($object) . "DB(\${$object}) ? \$this->messsageCreated('Se ha actualizado el registro.') : \$this->messageInternalServerError('No se ha podido actualizar el registro.');
+		\$response = \$this->model->update" . ucfirst($object) . "DB(\${$object});
+
+		if (\$response['status']) {
+			return \$this->messsageCreated(\$response['info']);
+		} else {
+			\$this->error(\"No se ha podido actualizar el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
+			return \$this->messageInternalServerError(\$response['info']);
+		}
 	}
 
 	public function delete" . ucfirst($object) . "(): string {
 		\${$object} = " . $this->setNewObject() . "
-		return \$this->model->delete" . ucfirst($object) . "DB(\${$object}) ? \$this->messsageCreated('Se ha eliminado el registro.') : \$this->messageInternalServerError('No se ha podido eliminar el registro.');
+		\$response = \$this->model->delete" . ucfirst($object) . "DB(\${$object});
+
+		if (\$response['status']) {
+			\$this->info(\"Se ha eliminado el registro con ID '{\${$object}->get" . ucfirst($this->columns['info'][0]['COLUMN_NAME']) . "()}'\", debug_backtrace()[0]['function']);
+			return \$this->messsageCreated(\$response['info']);
+		} else {
+			\$this->error(\"No se ha podido eliminar el registro ({\$response['error']})\", debug_backtrace()[0]['function']);
+			return \$this->messageInternalServerError(\$response['info']);
+		}
 	}
 
 }";
@@ -286,7 +325,7 @@ final class {$name} extends AllController implements iConstructor {
 	private function setNewObject(): string {
 		$content = "new " . $this->entity . "(";
 
-		foreach ($this->columns as $key => $column) {
+		foreach ($this->columns['info'] as $key => $column) {
 			$content .= "\$this->request->" . $this->setNameAttr($column['COLUMN_NAME']) . ", ";
 		}
 
@@ -297,7 +336,7 @@ final class {$name} extends AllController implements iConstructor {
 	private function setAttributes(): string {
 		$content = "";
 
-		foreach ($this->columns as $key => $attr) {
+		foreach ($this->columns['info'] as $key => $attr) {
 			$content .= "\tprivate ?string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . " = null;\n";
 		}
 
@@ -307,7 +346,7 @@ final class {$name} extends AllController implements iConstructor {
 	private function setParams(): string {
 		$content = "";
 
-		foreach ($this->columns as $key => $attr) {
+		foreach ($this->columns['info'] as $key => $attr) {
 			$content .= "?string \$" . $this->setNameAttr($attr['COLUMN_NAME']) . " = null, ";
 		}
 
@@ -317,7 +356,7 @@ final class {$name} extends AllController implements iConstructor {
 	private function setValues(): string {
 		$content = "";
 
-		foreach ($this->columns as $key => $attr) {
+		foreach ($this->columns['info'] as $key => $attr) {
 			$content .= "\n\t\t\$this->" . $this->setNameAttr($attr['COLUMN_NAME']) . " = \$" . $this->setNameAttr($attr['COLUMN_NAME']) . ";";
 		}
 
@@ -327,7 +366,7 @@ final class {$name} extends AllController implements iConstructor {
 	private function setGettersSetters(): string {
 		$content = "";
 
-		foreach ($this->columns as $key => $attr) {
+		foreach ($this->columns['info'] as $key => $attr) {
 			$name = ucfirst($this->setNameAttr($attr['COLUMN_NAME']));
 			$content .= "\n\tpublic function get{$name}(): ?string {
 		return \$this->" . $this->setNameAttr($attr['COLUMN_NAME']) . ";
@@ -345,7 +384,7 @@ final class {$name} extends AllController implements iConstructor {
 	private function setCreate(): string {
 		$sql = "INSERT INTO {\$this->table} (";
 
-		foreach ($this->columns as $key => $attr) {
+		foreach ($this->columns['info'] as $key => $attr) {
 			$sql .= $attr['COLUMN_NAME'] . ", ";
 		}
 
@@ -353,7 +392,7 @@ final class {$name} extends AllController implements iConstructor {
 
 		$sql .= ") VALUES (";
 
-		foreach ($this->columns as $key => $attr) {
+		foreach ($this->columns['info'] as $key => $attr) {
 			$sql .= ":" . $this->setNameAttr($attr['COLUMN_NAME']) . ", ";
 		}
 
@@ -367,7 +406,7 @@ final class {$name} extends AllController implements iConstructor {
 	private function setSelect(bool $indiviudal = false): string {
 		$sql = "SELECT * FROM " . "\$this->table";
 
-		$sql .= $indiviudal ? " WHERE {$this->columns[0]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns[0]['COLUMN_NAME']) : "";
+		$sql .= $indiviudal ? " WHERE {$this->columns['info'][0]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns['info'][0]['COLUMN_NAME']) : "";
 
 		return $sql;
 	}
@@ -376,12 +415,12 @@ final class {$name} extends AllController implements iConstructor {
 		$sql = "UPDATE {\$this->table} SET ";
 
 		for ($i = 1; $i < count($this->columns); $i++) { 
-			$sql .= "{$this->columns[$i]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns[$i]['COLUMN_NAME']) . ", ";
+			$sql .= "{$this->columns['info'][$i]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns['info'][$i]['COLUMN_NAME']) . ", ";
 		}
 
 		$sql = rtrim($sql, ", ");
 
-		$sql .= " WHERE {$this->columns[0]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns[0]['COLUMN_NAME']);
+		$sql .= " WHERE {$this->columns['info'][0]['COLUMN_NAME']} = :" . $this->setNameAttr($this->columns['info'][0]['COLUMN_NAME']);
 
 		return $sql;
 	}
@@ -390,7 +429,7 @@ final class {$name} extends AllController implements iConstructor {
 		$order = "";
 
 		for ($i = 1; $i < count($this->columns); $i++) { 
-			$order .= "'get" . ucfirst($this->setNameAttr($this->columns[$i]['COLUMN_NAME'])) . "', ";
+			$order .= "'get" . ucfirst($this->setNameAttr($this->columns['info'][$i]['COLUMN_NAME'])) . "', ";
 		}
 
 		$order = rtrim($order, ", ");
@@ -401,7 +440,7 @@ final class {$name} extends AllController implements iConstructor {
 	private function setUpdateOrder() {
 		$order = $this->ignoreId();
 
-		$order .= ", 'get" . ucfirst($this->setNameAttr($this->columns[0]['COLUMN_NAME'])) . "'";
+		$order .= ", 'get" . ucfirst($this->setNameAttr($this->columns['info'][0]['COLUMN_NAME'])) . "'";
 
 		return $order;
 	}

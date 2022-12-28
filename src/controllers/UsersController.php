@@ -28,12 +28,12 @@ final class UsersController extends AllController implements iConstructor {
 		$this->model = new UsersModel();
 	}
 
-	public function createUser(): array {
-		$user = new Users(null, $this->request->nameUser);
+	public function createUser(): string {
+		$user = new Users($this->request->idUser, $this->request->nameUser);
 		$response = $this->model->createUserDB($user);
 
 		if ($response['status']) {
-			$this->info("Se creó un nuevo registro con ID {$user->getIdUser()}", debug_backtrace()[0]['function']);
+			$this->info("Se creó un nuevo registro con ID {$user->getId_user()}", debug_backtrace()[0]['function']);
 			return $this->messsageCreated($response['info']);
 		} else {
 			$this->error("No se ha podido crear el registro ({$response['error']})", debug_backtrace()[0]['function']);
@@ -41,7 +41,7 @@ final class UsersController extends AllController implements iConstructor {
 		}
 	}
 
-	public function readUsers(): array {
+	public function readUsers(): string {
 		$user = new Users($this->request->idUser, $this->request->nameUser);
 		$response = $this->model->readUsersDB($user);
 
@@ -53,7 +53,7 @@ final class UsersController extends AllController implements iConstructor {
 		}
 	}
 
-	public function readUser(): array {
+	public function readUser(): string {
 		$user = new Users($this->request->idUser, $this->request->nameUser);
 		$response = $this->model->readUserDB($user);
 
@@ -65,7 +65,7 @@ final class UsersController extends AllController implements iConstructor {
 		}
 	}
 
-	public function updateUser(): array {
+	public function updateUser(): string {
 		$user = new Users($this->request->idUser, $this->request->nameUser);
 		$response = $this->model->updateUserDB($user);
 
@@ -77,12 +77,12 @@ final class UsersController extends AllController implements iConstructor {
 		}
 	}
 
-	public function deleteUser(): array {
+	public function deleteUser(): string {
 		$user = new Users($this->request->idUser, $this->request->nameUser);
-		$response = $this->model->updateUserDB($user);
+		$response = $this->model->deleteUserDB($user);
 
 		if ($response['status']) {
-			$this->info("Se ha eliminado el registro con ID '{$user->getIdUser()}'", debug_backtrace()[0]['function']);
+			$this->info("Se ha eliminado el registro con ID '{$user->getId_user()}'", debug_backtrace()[0]['function']);
 			return $this->messsageCreated($response['info']);
 		} else {
 			$this->error("No se ha podido eliminar el registro ({$response['error']})", debug_backtrace()[0]['function']);

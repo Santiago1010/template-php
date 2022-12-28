@@ -43,7 +43,7 @@ class Users implements iEntity {
 
 	public function create(string $query): string {
     	$create = [
-    		"createUser" => "CALL createUser(:nameUser)"
+    		"createUser" => "INSERT INTO {$this->table} (id_user, name_user) VALUES (:idUser, :nameUser)"
     	];
 
     	return $create[$query];

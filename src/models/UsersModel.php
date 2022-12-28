@@ -21,14 +21,15 @@ final class UsersModel implements iConstructor {
 	private Connection $connection;
 
 	public function __construct() {
-		$this->connection = Connection::getInstance(); // Se crear una nueva instancia de la clase `Connection` y se almacena en el atributo `$connection`.
+		// Se crear una nueva instancia de la clase `Connection` y se almacena en el atributo `$connection`.
+		$this->connection = Connection::getInstance();
 	}
 
 	// Crear un nuevo {registro}.
-	public function createUserDB(Users $user): array {
+	public function createUserDB(Users $user): bool {
 		$ps = $this->connection->getPrepareStatement($user->create("createUser"));
 		$ps = $this->connection->getBindParam($ps, $user, ['getNameUser']);
-
+		
 		return $ps->execute() ? ['status' => true, 'info' => 'Se ha creado el {registro} correctamente.'] : ['status' => false, 'info' => 'No se ha podido crear el {registro}. Ya hemos enviado el reporte.', 'error' => $ps->errorInfo()];
 	}
 
@@ -50,14 +51,16 @@ final class UsersModel implements iConstructor {
 		return $response['status'] ? $response : ['status' => false, 'info' => 'Ha ocurrido un error al leer el {registro}. Ya hemos reportado el problema.', 'error' => $response['info']];
 	}
 
-	public function updateUserDB(Users $user): array {
+	// Actualizar un {registro}.
+	public function updateUserDB(Users $user): bool {
 		$ps = $this->connection->getPrepareStatement($user->update("updateUser"));
 		$ps = $this->connection->getBindParam($ps, $user, ['getNameUser', 'getIdUser']);
 		
 		return $ps->execute() ? ['status' => true, 'info' => 'Se ha actualizado el {registro} correctamente.'] : ['status' => false, 'info' => 'No se ha podido actualizar el {registro}. Ya hemos enviado el reporte.', 'error' => $ps->errorInfo()];
 	}
 
-	public function deleteUserDB(Users $user): array {
+	// Eliminar un {registro}.
+	public function deleteUserDB(Users $user): bool {
 		$ps = $this->connection->getPrepareStatement($user->delete("deleteUser"));
 		$ps = $this->connection->getBindParam($ps, $user, ['getIdUser']);
 		
