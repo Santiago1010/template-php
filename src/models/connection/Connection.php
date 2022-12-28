@@ -39,8 +39,6 @@ class Connection {
 	}
 
 	public function getBindValue($ps, $object, ?array $methods = []) {
-		$counter = 1;
-
   		// Filtramos sólo los métodos que empiecen con "get"
 		$methods = array_filter(empty($methods) ? get_class_methods($object) : $methods, function($method) {
 			return strpos($method, 'get') === 0;
@@ -48,10 +46,10 @@ class Connection {
 
   		// Iteramos sobre los métodos y asignamos sus valores devueltos a los parámetros del prepared statement
 		foreach ($methods as $method) {
+			// Almacenamos el valor de la función en la variable `$valor`.
 			$value = $object->$method();
     		// Asignamos el valor devuelto al parámetro del prepared statement con el mismo nombre que el método
-			$ps->bindValue($counter, $value, $this->setTypes($value));
-			$counter++;
+			$ps->bindParam(lcfirst(substr($method, 3)), $value, $this->setTypes($value));
 		}
 
   		// Devolvemos el resultado
