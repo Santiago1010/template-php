@@ -13,18 +13,16 @@ use Api\Traits\Logger;
 /**
  * Clase que contendrá todas las funciones y traits.
  */
-class AllController implements iConstructor {
+class AllController extends Security implements iConstructor {
 
 	use Response;
 	use Files;
 	use Logger;
 
 	protected object $request;
-	protected Security $security;
 
 	public function __construct() {
 		$this->request = $this->getRequest();
-		$this->security = new Security();
 	}
 
 	private function getRequest(): object {

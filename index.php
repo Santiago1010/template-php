@@ -33,6 +33,11 @@ Router::group(['prefix' => '/apiv1'], function() {
 			$users = new UsersController();
 			var_dump($users->createuser());
 		});
+
+		Router::post('/security', function() {
+			$prueba = new Prueba();
+			var_dump($prueba->passwordString());
+		});
 	});
 });
 
