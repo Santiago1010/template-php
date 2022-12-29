@@ -24,9 +24,6 @@ class TraitCommand extends Command {
 		// Obtener el nombre del archivo ingresado por el usuario
 		$name = $this->getFunctionName($input);
 
-		// Definir la ruta local donde se guardará el archivo de la función
-		$this->defineLocalRoute('./src/traits/');
-
 		if ($this->confirmDelete($input, $output) && $this->safeDelete($name, $output)) {
 			// Eliminar el archivo.
 			if ($this->deleteFile("./src/traits/{$name}.php")) {

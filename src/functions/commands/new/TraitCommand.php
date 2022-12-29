@@ -21,10 +21,6 @@ class TraitCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		// Obtener el nombre del archivo ingresado por el usuario
 		$name = $this->getTraitName($input);
-
-		// Definir la ruta local donde se guardará el archivo controlador
-		$this->defineLocalRoute('./src/trait/');
-
 		// Crear el contenido del archivo controlador
 		$content = "<?php
 

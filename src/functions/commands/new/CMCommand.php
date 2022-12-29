@@ -113,9 +113,6 @@ class {$this->entity} implements iEntity {
 
 }";
 
-		// Definir la ruta local donde se guardará la entidad
-		$this->defineLocalRoute('./src/models/entities/');
-
 		// Guardar la entidad en la ruta local especificada
 		if ($this->saveFile('./src/models/entities/', "{$this->entity}.php", $content)) {
 			$output->writeln("La entidad '{$this->entity}' ha sido creada exitosamente en la ruta: './src/models/entities/{{$this->entity}}.php'");

@@ -22,9 +22,6 @@ class FunctionCommand extends Command {
 		// Obtener el nombre del archivo ingresado por el usuario
 		$name = $this->getFunctionName($input);
 
-		// Definir la ruta local donde se guardará el archivo de la función
-		$this->defineLocalRoute('./src/functions/');
-
 		// Crear el contenido del archivo de la función
 		$content = "<?php
 

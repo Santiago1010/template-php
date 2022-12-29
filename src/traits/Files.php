@@ -8,17 +8,6 @@ namespace Api\Traits;
 
 trait Files {
 
-	private ?string $local = null;
-	private ?string $external = null;
-
-	public function defineLocalRoute(string $route) {
-		$this->local = $route;
-	}
-
-	public function defineExternalPath(string $route) {
-		$this->external = $route;
-	}
-
 	public function saveFile(string $path, string $fileName, string $content): bool {
     	// Verificar si la ruta existe. Si no existe, crearla.
 		if (!file_exists($path)) {

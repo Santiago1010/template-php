@@ -22,9 +22,6 @@ class ModelCommand extends Command {
 		// Obtener el nombre del archivo ingresado por el usuario
 		$name = $this->getModelName($input);
 
-		// Definir la ruta local donde se guardará el archivo controlador
-		$this->defineLocalRoute('./src/models/');
-
 		// Crear el contenido del archivo controlador
 		$content = "<?php
 

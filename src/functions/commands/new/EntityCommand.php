@@ -28,9 +28,6 @@ class EntityCommand extends Command {
 		// Obtener el nombre del archivo ingresado por el usuario
 		$name = $this->getEntityName($input);
 
-		// Definir la ruta local donde se guardará el archivo controlador
-		$this->defineLocalRoute('./src/models/entities/');
-
 		// Crear el contenido del archivo controlador
 		$content = "<?php
 

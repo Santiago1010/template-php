@@ -24,9 +24,6 @@ class ControllerCommand extends Command {
 		// Obtener el nombre del archivo ingresado por el usuario
 		$name = $this->getControllerName($input);
 
-		// Definir la ruta local donde se guardará el archivo de la función
-		$this->defineLocalRoute('./src/controllers/');
-
 		if ($this->confirmDelete($input, $output) && $this->safeDelete($name, $output)) {
 			// Eliminar el archivo.
 			$this->deleteFile("./src/controllers/{$name}.php") ? $output->writeln("El archivo {$name} ha sido eliminado.") : $output->writeln("No se ha encontrado el archivo './src/controllers/{$name}.php'");

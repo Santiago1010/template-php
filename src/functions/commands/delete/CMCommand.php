@@ -24,9 +24,6 @@ class CMCommand extends Command {
 		// Obtener el nombre del archivo ingresado por el usuario
 		$name = $input->getArgument('name');
 
-		// Definir la ruta local donde se guardará el archivo de la función
-		$this->defineLocalRoute('./src/models/');
-
 		if ($this->confirmDelete($input, $output) && $this->safeDelete($name, $output)) {
 			// Eliminar el archivo.
 			if ($this->deleteFile("./src/models/entities/" . $this->getEntityName($name) . ".php")) {

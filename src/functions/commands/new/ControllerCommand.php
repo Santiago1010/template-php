@@ -22,9 +22,6 @@ class ControllerCommand extends Command {
 		// Obtener el nombre del archivo ingresado por el usuario
 		$name = $this->getControllerName($input);
 
-		// Definir la ruta local donde se guardará el archivo controlador
-		$this->defineLocalRoute('./src/Controller/');
-
 		// Crear el contenido del archivo controlador
 		$content = "<?php
 
