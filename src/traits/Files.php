@@ -3,9 +3,8 @@
 namespace Api\Traits;
 
 /**
- * Trait que controlará los archivos tanto internos, como externos.
+ * 
  */
-
 trait Files {
 
 	public function saveFile(string $path, string $fileName, string $content): bool {

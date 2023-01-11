@@ -9,6 +9,7 @@ use Api\Functions\Security;
 use Api\Traits\Response;
 use Api\Traits\Files;
 use Api\Traits\Logger;
+use Api\Traits\Number;
 
 /**
  * Clase que contendrá todas las funciones y traits.
@@ -18,6 +19,7 @@ class AllController extends Security implements iConstructor {
 	use Response;
 	use Files;
 	use Logger;
+	use Number;
 
 	protected object $request;
 
