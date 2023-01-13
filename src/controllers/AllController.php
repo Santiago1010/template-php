@@ -11,6 +11,8 @@ use Api\Traits\Files;
 use Api\Traits\Logger;
 use Api\Traits\Number;
 
+use Symfony\Component\HttpFoundation\Session\Session;
+
 /**
  * Clase que contendrá todas las funciones y traits.
  */
@@ -21,18 +23,14 @@ class AllController extends Security implements iConstructor {
 	use Logger;
 	use Number;
 
-	protected object $request;
+	protected array $request;
 
 	public function __construct() {
-		$this->request = $this->getRequest();
+		$session = new Session();
+		$this->request = $session->get('clean_request_data');
 	}
 
-	private function getRequest(): object {
-		$content = json_decode(file_get_contents("php://input"), true);
-        return $content === null ? (object) ($_POST + $_FILES + $_GET) : (object) $content;
-	}
-
-	protected function jsonParser(array $response): string {
+	public static function jsonParser(array $response): string {
 		return json_encode($response, JSON_UNESCAPED_UNICODE);
 	}
 

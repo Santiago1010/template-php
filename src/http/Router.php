@@ -10,85 +10,82 @@ use Phroute\Phroute\Exception\HttpRouteNotFoundException;
 use Phroute\Phroute\RouteCollector;
 
 class Router {
-	protected static $router;
-	protected static $request;
 
-	public static function init() {
-		self::$router = new RouteCollector();
-	}
+    public static RouteCollector $routes;
+    public static string $prefix;
+    public static array $middlewares = [];
 
-	public static function get(string $uri, $function, array $options = []): void {
-		self::$router->get($uri, function() use ($function) {
-			return $function(self::$request);
-		}, $options);
-	}
+    public static function init() {
+        self::$routes ??= new RouteCollector();
+    }
 
-	public static function post(string $uri, $function, array $options = []): void {
-		self::$router->post($uri, function() use ($function) {
-			return $function(self::$request);
-		}, $options);
-	}
+    public static function addRoutes($method, $route, $callback, $middleware = []) {
+    	self::init();
 
-	public static function put(string $uri, $function, array $options = []): void {
-		self::$router->put($uri, function() use ($function) {
-			return $function(self::$request);
-		}, $options);
-	}
+        self::$routes->addRoute($method, $route, $callback);
+        if (!empty($middleware)) {
+            self::$routes->addMiddleware($route, $middleware);
+        }
+    }
 
-	public static function delete(string $uri, $function, array $options = []): void {
-		self::$router->delete($uri, function() use ($function) {
-			return $function(self::$request);
-		}, $options);
-	}
+    public static function group($prefix, $callback, $middlewares = []) {
+        self::init();
 
-	public static function any(string $uri, $function, array $options = []): void {
-		self::$router->any($uri, function() use ($function) {
-			return $function(self::$request);
-		}, $options);
-	}
+        self::$routes->group($prefix, function($route) use ($middlewares, $callback) {
+            foreach ($middlewares as $middleware) {
+                $route->before($middleware);
+            }
+            $callback($route);
+        });
+    }
 
-	public static function head(string $uri, $function, array $options = []): void {
-		self::$router->head($uri, function() use ($function) {
-			return $function(self::$request);
-		}, $options);
-	}
+    public static function get($route, $callback, $middleware = []) {
+    	self::init();
 
-	public static function options(string $uri, $function, array $options = []): void {
-		self::$router->options($uri, function() use ($function) {
-			return $function(self::$request);
-		}, $options);
-	}
+        self::addRoutes('GET', $route, $callback, $middleware);
+    }
 
-	public static function patch(string $uri, $function, array $options = []): void {
-		self::$router->patch($uri, function() use ($function) {
-			return $function(self::$request);
-		}, $options);
-	}
+    public static function post($route, $callback, $middleware = []) {
+    	self::init();
 
-	public static function group(array $options, Closure $closure): void {
-		self::$router->group($options, function() use ($closure) {
-			return $closure(self::$request);
-		});
-	}
+        self::addRoutes('POST', $route, $callback, $middleware);
+    }
 
+    public static function put($route, $callback, $middleware = []) {
+    	self::init();
 
-	public static function filter(string $name, Closure $closure): void {
-		self::$router->filter($name, function() use ($closure) {
-			return $closure(self::$request);
-		});
-	}
+        self::addRoutes('PUT', $route, $callback, $middleware);
+    }
 
-	public static function dispatch(): void {
-		try {
-			$dispatcher = new Dispatcher(self::$router->getData());
-			$response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], implode('/', array_slice(explode('/', $_SERVER['REQUEST_URI']), 2)));
-			echo $response;
-		} catch (HttpRouteNotFoundException $e) {
-            // Manejo de excepción para rutas no encontradas
-            echo $e->getMessage();
-		} catch (HttpMethodNotAllowedException $e) {
-            // Manejo de excepción para métodos HTTP no permitidos
-            echo $e->getMessage();
-		}
-	}
+    public static function patch($route, $callback, $middleware = []) {
+    	self::init();
+
+        self::addRoutes('PATCH', $route, $callback, $middleware);
+    }
+
+    public static function delete($route, $callback, $middleware = []) {
+    	self::init();
+
+        self::addRoutes('DELETE', $route, $callback, $middleware);
+    }
+
+    public static function options($route, $callback, $middleware = []) {
+    	self::init();
+
+        self::addRoutes('OPTIONS', $route, $callback, $middleware);
+    }
+
+    public static function dispatch(Request $request) {
+        $dispatcher = new Dispatcher(self::$routes->getData());
+
+        try {
+            $response = $dispatcher->dispatch($request->getMethod(), $request->getPathInfo());
+            return $response;
+        } catch (HttpRouteNotFoundException $e) {
+            return $e->getMessage();
+        } catch (HttpMethodNotAllowedException $e) {
+            return $e->getMessage();
+        }
+    }
+
 }

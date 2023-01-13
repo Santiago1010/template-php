@@ -18,9 +18,10 @@ trait Number {
 	* Método que convierte un número a su representación en string
 	* 
 	* @param string|int|float $number Número a convertir
+	* @param bool $may Si se quiere que se vuelva en mayúsuculas, o no.
 	* @return string representación en string del número
 	*/
-	protected function numberToString(string|int|float $number): string {
+	public function numberToString(string|int|float $number, bool $may): string {
 		// Inicializar variable vacía
 		$n = "";
 
